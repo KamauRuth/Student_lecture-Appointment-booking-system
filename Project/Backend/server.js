@@ -15,7 +15,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors(cors_options));
-app.use('/user', userRouter)
+app.use('/api/user', userRouter);
 const port = process.env.PORT || 5000;
 
 
