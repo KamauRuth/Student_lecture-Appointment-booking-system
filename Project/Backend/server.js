@@ -7,7 +7,7 @@ require('dotenv').config();
 const dbConfig = require('./config/dbconfig.js');
 const userRouter = require('./Routes/user.js');
 const cors_options = {
-    origin: ['http://localhost:5173', 'http://localhost:3000', "*"],
+    origin: ['http://localhost:5000', 'http://localhost:3000', "*"],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   };
 
