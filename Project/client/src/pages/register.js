@@ -25,7 +25,7 @@ function Register() {
      console.log("hello");
     try {
       console.log("hello")
-      const response = await axios.post('https://student-lecture-appointment-booking.onrender.com/register', form);
+      const response = await axios.post('https://student-lecture-appointment-booking.onrender.com/api/Usersregister', form);
       console.log(response)
       if (response.data.success) {
         toast.success(response.data.message);
