@@ -22,12 +22,11 @@ function Register() {
   }
   const onFinish = async (e) => {
      e.preventDefault();
-
+     console.log("hello");
     try {
       console.log("hello")
-      const response = await axios.post('http://localhost:5000/api/Users/register', form);
+      const response = await axios.post('https://student-lecture-appointment-booking.onrender.com/register', form);
       console.log(response)
-      console.log("there")
       if (response.data.success) {
         toast.success(response.data.message);
       } else {
@@ -37,6 +36,7 @@ function Register() {
       toast.error('An error occurred');
     }
   };
+
 
   return (
     <div className="authentication">
