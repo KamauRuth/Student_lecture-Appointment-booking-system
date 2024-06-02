@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
+  const navigate = useNavigate();
   const [confirmpassword, setConfirmPassword] = useState('');
   const [form, setForm] = useState({
     firstname: '',
@@ -32,7 +33,7 @@ function Register() {
       if (data.success) {
         toast.success(response.data.message);
         setTimeout(() => {
-          window.location.href = '/';
+          navigate('/');
         }, 2000); 
       } else {
         toast.error(response.data.message);

@@ -2,8 +2,10 @@ import React from 'react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: '',
     password: '',
@@ -20,13 +22,12 @@ function Login() {
   const onFinish = async (e) => {
     e.preventDefault();
     try {
-    
       const response = await axios.post('/api/user/login', form)
       const data = await response.data;
       if (data.success) {
         toast.success(response.data.message);
         setTimeout(() => {
-          window.location.href = '/';
+          navigate('/');
         }, 2000); 
       } else {
         toast.error(response.data.message);
