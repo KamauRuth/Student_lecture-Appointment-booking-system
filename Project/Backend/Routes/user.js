@@ -5,14 +5,11 @@ const User = require('../Models/userModels.js'); // Ensure the correct path to y
 
 userRouter.post('/register', async (req, res) => {
     try {
-        console.log(req.body)
-        console.log("req email: ",req.body.email)
         const userExists = await User.findOne({ email: req.body.email });
         if (userExists) {
             return res.status(400).send({ message: "User already exists", success: false });
         }
         const password = req.body.password;
-        console.log("password: ",password)
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         req.body.password = hashedPassword;
@@ -26,7 +23,7 @@ userRouter.post('/register', async (req, res) => {
 
 userRouter.post('/login', async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.body.email });
+        const user = await User.findOne({ username: req.body.username });
         if (!user) {
             return res.status(400).send({ message: "User not found", success: false });
         }
