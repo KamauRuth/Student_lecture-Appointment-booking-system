@@ -1,4 +1,4 @@
-const express = require('express');
+/* const express = require('express');
 const router = express.Router();
 const User = require('../Models/userModels.js');
 const bcrypt = require('bcryptjs');
@@ -47,4 +47,4 @@ async function Login (req, res)  {
 }
 
 
-module.exports = {Register, Login};
+module.exports = {Register, Login}; */
