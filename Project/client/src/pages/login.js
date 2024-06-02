@@ -59,9 +59,9 @@ function Login() {
           
           <div className="checkbox-box">
             <label htmlFor="remember-me">
-              <input type="checkbox" id="remember-me" name="remember-me" />
-              onChange={handleChange}
-              value={form.forgotpassword} Remember me<p><a href="/forgotpassword">Forgot Password?</a></p>
+              <input type="checkbox" id="remember-me" name="remember-me" onChange={handleChange}
+              value={form.forgotpassword}  />
+              Remember me<p><a href="/forgotpassword">Forgot Password?</a></p>
             </label>
           </div>
           
