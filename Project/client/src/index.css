@@ -74,4 +74,14 @@ input, button {
     padding: 5px;
 }
 
+.anchor {
+    color: black;
+    text-decoration: underline;
+    font-size: 15px;
+    margin-top: 10px;
+}
+.anchor:hover {
+    text-decoration: underline;
+}
+
 

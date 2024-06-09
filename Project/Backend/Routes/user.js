@@ -45,26 +45,28 @@ userRouter.post('/login', async (req, res) => {
     }
 });
 
-userRouter.post('/get-user-info-by-id', authMiddleware, async(req, res)=>{
-    
-    try{
-        const user = await user.findOne({_id: req.body.userId});
-        if(!user){
-            return res.status(200).send({message: "User not found", success: false});
-
-    } else {
-        res.status(200).send({message: "User found", success: true, data: {
-            username: user.username,
-            email: user.email
-        }});
-        
+userRouter.post("/get-user-info-by-id", async (req, res) => {
+    try {
+      console.log("Request received with userId:", req.body.userId);
+      // Declare and initialize user before using it
+      const user = await getUserInfoById(req.body.userId);
+      console.log("User information retrieved:", user);
+      res.status(200).json({ user });
+    } catch (error) {
+      console.log("Error is:", error.message);
+      res.status(500).json({ message: "Server Error" });
     }
-    
+  });
+  
+    const getUserInfoById = async (userId) => {
+    try {
+      const user = await User.findById(userId);
+      return user;
+    } catch (error) {
+      console.log("Error is:", error.message);
+      return null;
+    }
+
 }
-    catch(error){
-        res.status(500).send({message: "Error getting user", success: false});y
-        console.log("error is: ",error);
 
-    }
-});
 module.exports = userRouter;
