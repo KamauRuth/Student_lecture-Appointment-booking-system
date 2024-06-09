@@ -14,10 +14,26 @@ function App() {
 
       <Routes>
 
-        <Route path="/login" element={<Login/>} />
-        <Route path="/register" element={<Register/>} />
+        <Route path="/login" element={
+          <publicRoute>
+             <Login/>
+          </publicRoute>
+        } />
+
+
+        <Route path="/register" element={
+          <publicRoute>
+            <Register/>
+          </publicRoute>
+         } />
+         
         <Route path="/forgotpassword" element={<ForgotPassword/>} />
-        <Route path="/" element={<Home/>}/>
+        <Route path="/" element={
+          <protectedRoute>
+            <Home/>
+          </protectedRoute>
+        } />
+          
 
       
       </Routes>
