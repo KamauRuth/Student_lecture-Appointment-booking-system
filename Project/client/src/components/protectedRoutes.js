@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 
 function ProtectedRoutes(props) {
+    
     if(localStorage.getItem('token')){
         return props.children
     } else {

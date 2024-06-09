@@ -36,7 +36,7 @@
 }
 .menu{
     margin-top: 100px;
-    padding: 0 20px;
+    padding: 0 10px;
 }
 
 .menu-item{
@@ -47,6 +47,7 @@
     color: rgba(255, 255, 255, 0.725);
     text-decoration: none;
     font-size: 15px;
+    padding: 0 10px;
 }
 .menu-item i{
     color: rgba(255, 255, 255, 0.722);

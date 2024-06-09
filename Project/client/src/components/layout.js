@@ -59,6 +59,11 @@ function Layout ({children}) {
                     <div className="content">
                         <div className="content-header">
                             {collapsed ?<i className="ri-menu-fill header-action-icon" onClick={()=>setCollapsed(false)}></i> : <i className="ri-close-fill header-action-icon" onClick={()=>setCollapsed(true)}></i>}
+
+                            <div className="d-flex">
+                            <i className="ri-notification-line header-action-ico"></i>
+
+                            </div>
                         </div>
                         <div className="content-body">
                             {children.children}
