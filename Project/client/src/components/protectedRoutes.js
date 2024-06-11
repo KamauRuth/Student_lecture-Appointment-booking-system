@@ -3,7 +3,8 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { setUser } from '../redux/actions/userActions';
+import {setUser} from '../redux/userSlice';
+import { showLoading, hideLoading } from '../redux/alertSlice';
 
 function ProtectedRoutes(props) {
     const {user} = useSelector((state) => state.user);
@@ -11,11 +12,12 @@ function ProtectedRoutes(props) {
     const navigate = useNavigate();
     const getUser= async ()=> {
         try {
+            dispatch (showLoading())
             const response = await axios.post('/api/user/get-user-info-by-id', {token : localStorage.getItem('token')},
             
         );
           if(response.data.success) {
-            dispatch(setUser(response.data.data));
+            dispatch(hideLoading());
         } else{
             navigate('/login');
         }

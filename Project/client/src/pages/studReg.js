@@ -3,7 +3,7 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 
-function lecReg() {
+function  studReg() {
   const navigate = useNavigate();
   const [confirmpassword, setConfirmPassword] = useState('');
   const [form, setForm] = useState({
@@ -28,7 +28,7 @@ function lecReg() {
       if (form.password !== confirmpassword) {
         return toast.error('Passwords do not match');
       }
-      const response = await axios.post('/api/user/lecturer/register', form)
+      const response = await axios.post('/api/user/student/register', form)
       const data = await response.data;
       if (data.success) {
         toast.success(response.data.message);
@@ -147,4 +147,4 @@ function lecReg() {
   );
 }
 
-export default lecReg;
+export default studReg;

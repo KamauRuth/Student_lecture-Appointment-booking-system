@@ -3,7 +3,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 function Login() {
   const {loading}= useSelector(state => state.alerts)
@@ -29,7 +29,8 @@ function Login() {
       const data = await response.data;
       if (data.success) {
         toast.success(response.data.message);
-        localStorage.setItem('token', response.data.data);
+        localStorage.setItem('token',  response.data.data);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
         setTimeout(() => {
           navigate('/');
         }, 2000); 

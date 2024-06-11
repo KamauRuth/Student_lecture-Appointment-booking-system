@@ -64,7 +64,7 @@ userRouter.post('/login', async (req, res) => {
             return res.status(200).send({ message: "Invalid credentials", success: false });
         } else{
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            res.status(200).send({ message: "Login successful", success: true, data: token });
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, role: user.role }});
         
         }
     } catch (error) {

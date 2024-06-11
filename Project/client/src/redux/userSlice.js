@@ -11,4 +11,4 @@ export const userSlice = createSlice({
 }
 });
 
-const { showLoading, hideLoading } = userSlice.actions;
+const {setUser } = userSlice.actions;
