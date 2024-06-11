@@ -9,7 +9,7 @@ module.exports = async(req, res, next) => {
             {
                 return res.status(401).send({message: "Unauthorized", success: false})
             }else{
-                req.body.userId = decoded.id;
+                req.userId = decoded.id;
                 next();
             }
 

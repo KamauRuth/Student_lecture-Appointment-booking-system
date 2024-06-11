@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");// Ensure the correct path to your User model
 
 
-userRouter.post('/register', async (req, res) => {
+userRouter.post('/lecturer/register', async (req, res) => {
    
     try {
         const userExists = await User.findOne({ email: req.body.email });
@@ -17,7 +17,35 @@ userRouter.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         req.body.password = hashedPassword;
-        const newUser = new User(req.body);
+        const user = {
+            ...req.body,
+            role: "lecturer"
+        }
+        const newUser = new User(user);
+        await newUser.save();
+        res.status(200).send({ message: "User created successfully", success: true });
+    } catch (error) {
+        res.status(500).send({ message: "Error creating user", success: false });
+    }
+});
+
+userRouter.post('/student/register', async (req, res) => {
+   
+    try {
+        const userExists = await User.findOne({ email: req.body.email });
+        if (userExists) {
+            return res.status(400).send({ message: "User already exists", success: false });
+        }
+        const password = req.body.password;
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        req.body.password = hashedPassword;
+        const user = {
+            ...req.body,
+            role:"student"
+        }
+    
+        const newUser = new User(user);
         await newUser.save();
         res.status(200).send({ message: "User created successfully", success: true });
     } catch (error) {
@@ -46,10 +74,25 @@ userRouter.post('/login', async (req, res) => {
 });
 
 userRouter.post("/get-user-info-by-id", async (req, res) => {
+    let userId
     try {
-      console.log("Request received with userId:", req.body.userId);
+        const token = req.body.token;
+
+        jwt.verify(token, process.env.JWT_SECRET, (err, decoded)=>{
+    
+            if (err)
+                {
+                    return res.status(401).send({message: "Unauthorized", success: false})
+                }else{
+                  userId = decoded.id;
+                }
+    
+    })
+
+
+      console.log("Request received with userId:", userId);
       // Declare and initialize user before using it
-      const user = await getUserInfoById(req.body.userId);
+      const user = await getUserInfoById(userId);
       console.log("User information retrieved:", user);
       res.status(200).json({ user });
     } catch (error) {
