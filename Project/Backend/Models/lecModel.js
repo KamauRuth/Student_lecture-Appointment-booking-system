@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
-
-const userShema = new mongoose.Schema({
+const lecSchema = new mongoose.Schema({
+    userId:{
+        type: String,
+        required: [true, 'Please provide a userId!']
+    },
     firstname: {
         type: String,
         required: [true, 'Please tell us your name!']
@@ -21,13 +24,9 @@ const userShema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a password!']
     },
-    isLecturer:{
-        type: Boolean,
-        default: false,
-    },
-    isAdmin:{
-        type: Boolean,
-        default: false,
+    isLecturer: {
+        type: String,
+        default: false
     },
     seenNotifications: {
         type: Array,
@@ -37,11 +36,21 @@ const userShema = new mongoose.Schema({
         type: Array,
         default: []
     },
-
+    courses: {
+        type: Array,
+        default: []
+    },
+    fromtime: {
+        type: String,
+         required: [true, 'Please provide a fromtime!']
+    },
+    totime: {
+        type: String,
+         required: [true, 'Please provide a totime!']
+    },
 }, {
     timestamps: true
 });
 
-const userModel = mongoose.model('Users', userShema);
-
-module.exports = userModel;
+const lecModel = mongoose.model('Lecturers', lecSchema);
+module.exports = lecModel;

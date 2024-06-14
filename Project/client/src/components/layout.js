@@ -2,11 +2,13 @@ import '../layout.css'
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 function Layout ({children}) {
     const [collapsed, setCollapsed] = useState(false);
     const {user} = useSelector((state) => state.user);
     const location = useLocation();
+    const navigate = useNavigate();
     const userMenu = [
         {
             name: 'Home',
@@ -28,12 +30,35 @@ function Layout ({children}) {
             path: '/profile',
             icon:'ri-user-fill'
         },
-        {
-            name: 'logout',
-            path: '/logout',
-            icon:'ri-logout-box-line'
-        }
+        
+        
     ];
+
+    const adminMenu = [
+        {
+            name: 'Home',
+            path: '/',
+            icon:'ri-home-line'
+        },
+        {
+            name: 'users',
+            path: '/users',
+            icon:'ri-user-line'
+        },
+        {
+            name: 'Lecturers',
+            path: '/lecturers',
+            icon:'ri-school-line'
+        },
+        {
+            name: 'profile',
+            path: '/profile',
+            icon:'ri-user-fill'
+        },
+      
+
+    ];
+
     const menuToBeRendered = userMenu
 
         return(
@@ -43,7 +68,7 @@ function Layout ({children}) {
                     <div className="sidebar">
 
                         <div className="sidebar-header">
-                            <h1>SLABS</h1>
+                            <h1 className='logo'>SLABS</h1>
                         </div>
 
                         <div className="menu">
@@ -54,7 +79,14 @@ function Layout ({children}) {
                                     {!collapsed && <Link to={menu.path}>{menu.name}</Link>}
                                    </div>
                                
-                            })}  
+                            })} 
+                            <div className={"d-flex menu-item"} onClick={()=>   window.confirm('Are you sure you want to logout?') && (
+                                navigate('/login')
+                            )}> 
+                                <i className="ri-logout-circle-line"></i>
+                                {!collapsed && <Link to='/login'>Logout</Link>}
+                            </div>
+
                         </div>
                         
                     </div>
@@ -62,8 +94,8 @@ function Layout ({children}) {
                         <div className="content-header">
                             {collapsed ?<i className="ri-menu-fill header-action-icon" onClick={()=>setCollapsed(false)}></i> : <i className="ri-close-fill header-action-icon" onClick={()=>setCollapsed(true)}></i>}
 
-                            <div className="d-flex align items center">
-                            <i className="ri-notification-line header-action-icon mr-2"></i>
+                            <div className="d-flex align-items-center px-4">
+                            <i className="ri-notification-line header-action-icon mr-2 px-3"></i>
                             <Link className='anchor' to='/profile'>{user? user.name:'kamau'}</Link> 
 
                             </div>

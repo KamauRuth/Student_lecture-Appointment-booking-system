@@ -30,10 +30,11 @@ function Register() {
       }
       const response = await axios.post('/api/user/register', form)
       const data = await response.data;
+    
       if (data.success) {
         toast.success(response.data.message);
         setTimeout(() => {
-          navigate('/');
+          navigate('/login');
         }, 2000); 
       } else {
         toast.error(response.data.message);
@@ -48,8 +49,9 @@ function Register() {
     <div className="authentication">
       <Toaster />
       <div className="authentication_form">
-        <h1>Register</h1>
+        
         <form className="myform" onSubmit={onFinish}>
+        <h1>Register</h1>
           <div className="input-box">
             <label htmlFor="firstname">First Name:</label>
             <input

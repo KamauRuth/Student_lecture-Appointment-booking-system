@@ -12,6 +12,7 @@
     */
 
 
+
 .myform, .Login_form, .forgotpassword_form {
     width: 500px;
     margin-top: 100px;
@@ -84,4 +85,10 @@ input, button {
     text-decoration: underline;
 }
 
+.page-title {
+    font-size: 25px;
+    font-weight: bold;
+    color:black;
+   
+}
 

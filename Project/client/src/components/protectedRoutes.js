@@ -16,13 +16,18 @@ function ProtectedRoutes(props) {
             const response = await axios.post('/api/user/get-user-info-by-id', {token : localStorage.getItem('token')},
             
         );
+        dispatch(hideLoading());
           if(response.data.success) {
-            dispatch(hideLoading());
+            dispatch(setUser(response.data.data));
         } else{
+            localStorage.clear();
             navigate('/login');
         }
         }
         catch (error) {
+            dispatch(hideLoading());
+            localStorage.clear();
+            navigate('/login');
             console.log(error);
         }
 
