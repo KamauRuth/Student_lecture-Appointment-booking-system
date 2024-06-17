@@ -2,6 +2,7 @@ const express = require('express');
 const userRouter = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../Models/userModels.js');
+const lecturer = require('../Models/lecModel.js');
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");// Ensure the correct path to your User model
 
@@ -84,5 +85,31 @@ userRouter.post("/get-user-info-by-id", async (req, res) => {
     }
 
 }
+
+userRouter.post("/apply-lecturer", async (req, res) => {
+    try{
+        const newlecturer = new lecturer({...req.body , status : 'pending'} );
+        await newlecturer.save();
+        const adminUser = await User.findOne({isAdmin: true});
+        const unseenNotifications = adminUser.unseenNotifications;
+        unseenNotifications.push({
+            type: "New lecturer application",
+            message: "New lecturer application",
+            data:{
+                userId: newLecturer.userId,
+                username: newLecturer.username,
+                email: newLecturer.email
+            },
+            onclick : '/admin/lecturer-applications'
+        });
+        await User.findByIdAndupdateOne(adminUser._id, {unseenNotifications});
+    } catch (error) {
+        console.log("Error is:", error.message);
+        res.status(500).json({ message: "Server Error" });
+    }
+
+}
+  
+);
 
 module.exports = userRouter;

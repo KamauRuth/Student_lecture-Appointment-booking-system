@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function Register() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [confirmpassword, setConfirmPassword] = useState('');
   const [form, setForm] = useState({
     firstname: '',
@@ -28,6 +29,7 @@ function Register() {
       if (form.password !== confirmpassword) {
         return toast.error('Passwords do not match');
       }
+    
       const response = await axios.post('/api/user/register', form)
       const data = await response.data;
     

@@ -20,11 +20,11 @@ const lecSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide your email!']
     },
-    password: {
+    phoneNumber: {
         type: String,
         required: [true, 'Please provide a password!']
     },
-    isLecturer: {
+    address: {
         type: String,
         default: false
     },
@@ -40,14 +40,19 @@ const lecSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    fromtime: {
+    experience: {
         type: String,
-         required: [true, 'Please provide a fromtime!']
+        default: false
     },
-    totime: {
+    timings: {
+        type: Array,
+        required: true
+    },
+    status: {
         type: String,
-         required: [true, 'Please provide a totime!']
-    },
+        default: 'pending'
+    }
+ 
 }, {
     timestamps: true
 });

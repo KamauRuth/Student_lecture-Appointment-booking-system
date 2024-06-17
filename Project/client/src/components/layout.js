@@ -101,7 +101,7 @@ function Layout ({children}) {
                             </div>
                         </div>
                         <div className="content-body">
-                            {children.children}
+                            {children}
                         </div>
                     </div>
                 </div>
