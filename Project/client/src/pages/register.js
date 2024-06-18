@@ -3,9 +3,10 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 
+
 function Register() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+
   const [confirmpassword, setConfirmPassword] = useState('');
   const [form, setForm] = useState({
     firstname: '',

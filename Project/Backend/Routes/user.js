@@ -86,7 +86,7 @@ userRouter.post("/get-user-info-by-id", async (req, res) => {
 
 }
 
-userRouter.post("/apply-lecturer", async (req, res) => {
+userRouter.post('/apply-lecturer', async (req, res) => {
     try{
         const newlecturer = new lecturer({...req.body , status : 'pending'} );
         await newlecturer.save();
