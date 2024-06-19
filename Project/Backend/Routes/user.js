@@ -109,6 +109,8 @@ userRouter.post('/apply-lecturer', async (req, res) => {
     }
 
 }
+
+
   
 );
 

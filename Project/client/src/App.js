@@ -6,6 +6,9 @@ import ForgotPassword from './pages/forgotpassword';
 import Home from './pages/Home'; 
 import { Toaster } from 'react-hot-toast';
 import ApplyLecturer from './pages/ApplyLecturer';
+import Notifications from './pages/Notifications';
+import Userlist from './pages/Admin/Userlist';
+import Lecturerlist from './pages/Admin/Lecturerlist';
 
 
 function App() {
@@ -43,8 +46,29 @@ function App() {
           </protectedRoute>
         } />
           
+          <Route
+           path="/notifications" element={
+          <protectedRoute>
+            <Notifications/>
+          </protectedRoute>
+        } />
 
-      
+
+           <Route
+           path="/users" element={
+          <protectedRoute>
+            <Userlist/>
+          </protectedRoute>
+        } />
+
+         <Route
+           path="/lecturers" element={
+          <protectedRoute>
+            <Lecturerlist/>
+          </protectedRoute>
+        } />
+
+
       </Routes>
 
     </BrowserRouter>

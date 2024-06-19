@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Badge} from 'antd';
 
 function Layout ({children}) {
     const [collapsed, setCollapsed] = useState(false);
@@ -59,7 +60,7 @@ function Layout ({children}) {
 
     ];
 
-    const menuToBeRendered = userMenu
+    const menuToBeRendered = adminMenu
 
         return(
             <div className="main">
@@ -95,8 +96,12 @@ function Layout ({children}) {
                             {collapsed ?<i className="ri-menu-fill header-action-icon" onClick={()=>setCollapsed(false)}></i> : <i className="ri-close-fill header-action-icon" onClick={()=>setCollapsed(true)}></i>}
 
                             <div className="d-flex align-items-center px-4">
+                                <Badge count={user?.unseenNotifications.length} onClick={()=>navigate('/notifications')}>
                             <i className="ri-notification-line header-action-icon mr-2 px-3"></i>
-                            <Link className='anchor' to='/profile'>{user? user.name:'kamau'}</Link> 
+                            </Badge>
+                            <Link className='anchor' to='/profile'>
+                               {user?.name}
+                            </Link> 
 
                             </div>
                         </div>

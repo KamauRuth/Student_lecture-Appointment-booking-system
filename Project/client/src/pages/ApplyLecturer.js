@@ -38,6 +38,7 @@ function ApplyLecturer() {
 
   const onFinish = async (e)=> {
     e.preventDefault();
+    console.log("hello")
     try {
       
       const response = await axios.post('/api/user/apply-lecturer', form)
@@ -198,8 +199,10 @@ function ApplyLecturer() {
           </Col>
           </Row>
 
-          <button type="submit" className="btn">Submit</button>
+          <div className='d-flex justify-content-end'>
 
+          <button htmlType="submit" className="primary-button">SUBMIT</button>
+          </div>
 
         </form>
       </div>
