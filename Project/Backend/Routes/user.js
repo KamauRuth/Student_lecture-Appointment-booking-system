@@ -11,6 +11,7 @@ userRouter.post('/register', async (req, res) => {
    
     try {
         const userExists = await User.findOne({ email: req.body.email });
+        console.log(userExists);
         if (userExists) {
             return res.status(400).send({ message: "User already exists", success: false });
         }
@@ -19,10 +20,11 @@ userRouter.post('/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
         req.body.password = hashedPassword;
        
-        const newUser = new User(user);
+        const newUser = new User(req.body);
         await newUser.save();
         res.status(200).send({ message: "User created successfully", success: true });
     } catch (error) {
+        console.log(error);
         res.status(500).send({ message: "Error creating user", success: false });
     }
 });
@@ -38,7 +40,7 @@ userRouter.post('/login', async (req, res) => {
             return res.status(200).send({ message: "Invalid credentials", success: false });
         } else{
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, role: user.role }});
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isAdmin: user.isAdmin }});
         
         }
     } catch (error) {
@@ -87,22 +89,30 @@ userRouter.post("/get-user-info-by-id", async (req, res) => {
 }
 
 userRouter.post('/apply-lecturer', async (req, res) => {
+    
     try{
-        const newlecturer = new lecturer({...req.body , status : 'pending'} );
+        // get user id from username
+        const userId = await User.findOne({username: req.body.username});
+        
+        const newlecturer = new lecturer({...req.body , status : 'pending', userId: userId._id} );
         await newlecturer.save();
+        // send notification to admin 
         const adminUser = await User.findOne({isAdmin: true});
+        console.log(adminUser);
         const unseenNotifications = adminUser.unseenNotifications;
+
         unseenNotifications.push({
             type: "New lecturer application",
             message: "New lecturer application",
             data:{
-                userId: newLecturer.userId,
-                username: newLecturer.username,
-                email: newLecturer.email
+                userId: newlecturer.userId,
+                username: newlecturer.username,
+                email: newlecturer.email
             },
             onclick : '/admin/lecturer-applications'
         });
-        await User.findByIdAndupdateOne(adminUser._id, {unseenNotifications});
+        await User.findByIdAndUpdate(adminUser._id, {unseenNotifications});
+        return res.status(200).json({message: "aplication received"});
     } catch (error) {
         console.log("Error is:", error.message);
         res.status(500).json({ message: "Server Error" });
@@ -111,7 +121,23 @@ userRouter.post('/apply-lecturer', async (req, res) => {
 }
 
 
+
+
   
 );
+
+userRouter.get('/api/user/profile',  async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('name email phone address');
+        if (!user) {
+          return res.status(404).send({ error: 'User not found' });
+        }
+        res.status(200).send({ user });
+      } catch (error) {
+        res.status(500).send({ error: 'Internal Server Error' });
+      }
+    });
+  
+
 
 module.exports = userRouter;

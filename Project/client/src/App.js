@@ -9,6 +9,8 @@ import ApplyLecturer from './pages/ApplyLecturer';
 import Notifications from './pages/Notifications';
 import Userlist from './pages/Admin/Userlist';
 import Lecturerlist from './pages/Admin/Lecturerlist';
+import AppointmentBooking from './pages/Appointments';
+import Profile from './pages/Profile';
 
 
 function App() {
@@ -67,6 +69,21 @@ function App() {
             <Lecturerlist/>
           </protectedRoute>
         } />
+
+        <Route
+           path="/appointments" element={
+          <protectedRoute>
+            <AppointmentBooking/>
+          </protectedRoute>
+        } />   
+
+       <Route
+           path="/profile" element={
+          <protectedRoute>
+            <Profile/>
+          </protectedRoute>
+        } />   
+ 
 
 
       </Routes>

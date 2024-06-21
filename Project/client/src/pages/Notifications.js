@@ -1,16 +1,32 @@
 import { Tabs } from 'antd';
 import Layout from '../components/layout'
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react'
+
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
 
 function Notifications() {
-    const {user} = useSelector((state)=> state.user)
     const navigate = useNavigate();
-   
-  
+   const user = localStorage.getItem("user");
+   const parsedUser = JSON.parse(user)
+   const username = parsedUser.username
+  const [notifications, setNotifications] = useState([])
+    useEffect(() => {
+      const getNotifications = async () => {
+        try {
+          const response = await axios.post('/api/admin/notifications', {username: username });
+          console.log(response);
+          if(response.status === 200){
+            setNotifications(response.data.notifications.unseenNotifications)
+          }
+        } catch (error) {
+          console.log("An error occcured", error)
+        }
+      }
+      getNotifications()
+    },[])
 
   return (
 
@@ -34,6 +50,22 @@ function Notifications() {
                 </div>
             </Tabs.TabPane>
         </Tabs>
+
+{
+  notifications.map((notifcations, index) => {
+   return (
+    <ul
+    key={index}
+    
+    >
+      <li>
+        {notifcations.message}
+      </li>
+    </ul>
+   )
+
+  })
+}
     </Layout>
   )
 }

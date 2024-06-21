@@ -32,6 +32,7 @@ function Register() {
       }
     
       const response = await axios.post('/api/user/register', form)
+      console.log(response);
       const data = await response.data;
     
       if (data.success) {

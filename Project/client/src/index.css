@@ -93,6 +93,9 @@ input{
     border-radius: 2px!important;
 
   }
+  .normal-text{
+    font-size: small;
+  }
   .btn{
     width: 300px;
     height: 40px;

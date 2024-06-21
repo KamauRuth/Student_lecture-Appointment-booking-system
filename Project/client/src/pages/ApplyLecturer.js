@@ -38,19 +38,22 @@ function ApplyLecturer() {
 
   const onFinish = async (e)=> {
     e.preventDefault();
-    console.log("hello")
+    console.log("hello");
+    const user = localStorage.getItem("user");
+    const parsedUser = JSON.parse(user);
+    form.username = parsedUser.username;
+    
     try {
       
       const response = await axios.post('/api/user/apply-lecturer', form)
-      const data = await response.data;
-    
-      if (data.success) {
+      console.log(response);
+      if (response.status === 200) {
         toast.success(response.data.message);
         setTimeout(() => {
           navigate('/appointments');
         }, 2000); 
       } else {
-        toast.error(response.data.message);
+        toast.error("An error occurred, please try again later");
       }
     } catch (error) {
       console.log("error is:", error.message)

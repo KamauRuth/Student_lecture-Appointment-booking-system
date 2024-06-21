@@ -6,14 +6,21 @@ import axios from 'axios';
 import { useEffect } from 'react';
 
 function Lecturerlist() {
-  const {lecturers, setLecturers} = useState([]) 
+  const [lecturers, setLecturers] = useState([]);
+  const [updated, setUpdated] = useState(false);
+
+  let token = localStorage.getItem("token");
 
   const getData = async () => {
     try {
-      const response = await axios.get("api/user/get-all-lecturers", {token: localStorage.getItem("token")}, );
-      console.log(response.data);
-      if(response.data.success){
-        setLecturers(response.data.data)
+      const response = await axios.get("api/admin/get-all-lecturers", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      } );
+      console.log(response);
+      if(response.status === 200){
+        setLecturers(response.data.lecturers)
       }
     } catch (error) {
       console.log("Error is:", error.message);
@@ -21,7 +28,7 @@ function Lecturerlist() {
   };
   useEffect(() => {
     getData();
-  } , []);
+  } , [updated]);
 
   const columns = [
     {
@@ -50,18 +57,32 @@ function Lecturerlist() {
       dataIndex: 'actions',
       render:(text, record)=>(
         <div className='d-flex'>
-          {record.status === 'pending' &&
-          <h1 className='anchor'>Block</h1>
-    }6
+          {record.status === 'pending' &&<h1 onClick={() => handleApprove(record._id)} className='anchor'>Approve</h1>}
+          {record.status === 'approved' &&<h1 className='anchor'>Block</h1>}
         </div>
       )
     }
   ]
 
+  const handleApprove =async (id) => {
+    try {
+      const response = await axios.post("api/admin/approve-lecturer", {user_id: id}, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+      } );
+      console.log(response);
+      if(response.status === 200){
+        setUpdated(!updated)
+      }
+    } catch (error) {
+      console.log("Error is:", error.message);
+    }
+  }
   return (
     <Layout>
       <h1 className='page-header'>Lecturers list</h1>
-      <Table columns={columns} dataSource={lecturers}/>
+      <Table columns={columns} dataSource={lecturers} key={0} />
     </Layout>
 
   )
