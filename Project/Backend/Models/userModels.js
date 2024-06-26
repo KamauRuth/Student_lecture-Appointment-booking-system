@@ -37,6 +37,10 @@ const userShema = new mongoose.Schema({
         type: Array,
         default: []
     },
+    availableTimes: {
+        type: Array,
+        default: []
+    }
 
 }, {
     timestamps: true

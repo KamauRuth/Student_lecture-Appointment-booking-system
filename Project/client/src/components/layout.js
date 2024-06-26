@@ -36,19 +36,15 @@ function Layout ({children}) {
     ];
 
     const adminMenu = [
+
         {
-            name: 'Home',
-            path: '/',
-            icon:'ri-home-line'
-        },
-        {
-            name: 'users',
-            path: '/users',
+            name: 'Update Availability',
+            path: '/update-availability',
             icon:'ri-user-line'
         },
         {
-            name: 'Lecturers',
-            path: '/lecturers',
+            name: 'Booked Appointments',
+            path: '/booked-appointments',
             icon:'ri-school-line'
         },
         {

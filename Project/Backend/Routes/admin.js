@@ -45,4 +45,27 @@ adminRouter.post("/notifications",  async(req,res) => {
     }
 });
 
+adminRouter.get('/appointments', async (req, res) => {
+    const appointments = await Appointment.find();
+    res.json(appointments);
+  });
+  
+adminRouter.post('/appointments/:id/accept', async (req, res) => {
+    await Appointment.findByIdAndUpdate(req.params.id, { status: 'Accepted' });
+    res.json({ message: 'Appointment accepted' });
+  });
+
+  
+adminRouter.post('/appointments/:id/reject', async (req, res) => {
+    await Appointment.findByIdAndUpdate(req.params.id, { status: 'Rejected' });
+    res.json({ message: 'Appointment rejected' });
+  });
+
+
+  adminRouter.put('/lecturers/:id/available-times', async (req, res) => {
+    const { availableTimes } = req.body;
+    await Lecturer.findByIdAndUpdate(req.params.id, { availableTimes });
+    res.json({ message: 'Available times updated' });
+  });
+
 module.exports = adminRouter;

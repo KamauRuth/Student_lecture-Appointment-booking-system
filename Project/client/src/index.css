@@ -158,3 +158,13 @@ button {
     margin-top: 20px;
 }
 
+.booked {
+  background-color: red !important;
+  color: white;
+}
+
+.available {
+  background-color: green !important;
+  color: white;
+}
+

@@ -1,6 +1,6 @@
 import  Layout from '../components/layout';
 import React from 'react'
-import { Form, Input, Button, DatePicker, TimePicker, Typography, Row, Col } from 'antd';
+import { Form, Input, Button, DatePicker, TimePicker, Typography } from 'antd';
 import moment from 'moment';
 import { useState } from 'react';
 
