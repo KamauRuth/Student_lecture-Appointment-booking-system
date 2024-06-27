@@ -18,12 +18,17 @@ const lecSchema = new mongoose.Schema({
     },
     username: {
         type: String,
-        default: false
+        required: [true, 'Please provide a username!']
     },
     email: {
         type: String,
         required: [true, 'Please provide your email!']
     },
+    isLecturer: {
+        type: Boolean,
+        default: true
+    },
+    
     phoneNumber: {
         type: String,
         default: false

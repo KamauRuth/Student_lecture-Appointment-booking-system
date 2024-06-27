@@ -15,6 +15,7 @@ function RegisterLecturer() {
   const [form, setForm] = useState({
     firstname: '',
     lastname: '',
+    username: '',
     email: '',
     department: '',
     password: '',
@@ -66,6 +67,9 @@ function RegisterLecturer() {
           </Form.Item>
           <Form.Item label="Last Name" name="lastname" rules={[{ required: true, message: 'Please input the lecturer\'s name!' }]}>
             <Input name='lastname'  onChange={handleChange} value={form.lastname} />
+          </Form.Item>
+          <Form.Item label="Username" name="username" rules={[{ required: true, message: 'Please input the username!' }]}>
+            <Input name='username'  onChange={handleChange} value={form.username} />
           </Form.Item>
           <Form.Item label="Email" name="email" rules={[{ required: true, message: 'Please input the lecturer\'s email!', type: 'email' }]}>
             <Input name='email' value={form.email} onChange={handleChange} />
