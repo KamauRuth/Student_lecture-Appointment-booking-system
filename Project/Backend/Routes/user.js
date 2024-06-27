@@ -138,7 +138,7 @@ userRouter.get('/api/user/profile', async (req, res) => {
     }
 });
 
-userRouter.post('/get-all-department', async (req, res) => {
+userRouter.get('/get-all-department', async (req, res) => {
     
     
     try {

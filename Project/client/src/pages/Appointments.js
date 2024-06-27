@@ -39,7 +39,7 @@ const navigate = useNavigate();
       // Fetch departments
       const fetchDepartments = async () =>{
         try{
-         const response= await axios.post('/api/user/get-all-department')
+         const response= await axios.get('/api/user/get-all-department')
           setDepartment(response.data);
         
       }catch(error) {
