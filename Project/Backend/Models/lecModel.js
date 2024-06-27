@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const lecSchema = new mongoose.Schema({
     userId:{
         type: String,
-        required: [true, 'Please provide a userId!']
+        default: false
     },
     firstname: {
         type: String,
@@ -12,9 +12,13 @@ const lecSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please tell us your name!']
     },
+    department: {
+        type: String,
+        required: [true, 'Please tell us your department!']
+    },
     username: {
         type: String,
-        required: [true, 'Please tell us your username!']
+        default: false
     },
     email: {
         type: String,
@@ -22,7 +26,7 @@ const lecSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        required: [true, 'Please provide a password!']
+        default: false
     },
     address: {
         type: String,
@@ -46,7 +50,7 @@ const lecSchema = new mongoose.Schema({
     },
     timings: {
         type: Array,
-        required: true
+     
     },
     status: {
         type: String,

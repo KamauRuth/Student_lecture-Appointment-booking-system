@@ -22,11 +22,6 @@ function Layout ({children}) {
             icon:'ri-file-list-line'
         },
         {
-            name: 'Apply Lecturer',
-            path: '/apply-lecturer',
-            icon:'ri-school-line'
-        },
-        {
             name: 'profile',
             path: '/profile',
             icon:'ri-user-fill'
@@ -35,7 +30,7 @@ function Layout ({children}) {
         
     ];
 
-    const adminMenu = [
+    const lecturerMenu = [
 
         {
             name: 'Update Availability',
@@ -56,7 +51,37 @@ function Layout ({children}) {
 
     ];
 
-    const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu
+    const adminMenu = [
+        {
+            name: 'Register Lecturers',
+            path: '/register-lecturers',
+            icon:'ri-user-add-line'
+        },
+        {
+            name: 'profile',
+            path: '/profile',
+            icon:'ri-user-fill'
+        },
+
+    ]
+
+
+    const isAdmin = user?.isAdmin;
+    const isLecturer = user?.isLecturer;
+    
+    let menuToBeRendered = [];
+    if (isAdmin) {
+        menuToBeRendered = adminMenu;
+
+    }else if(isLecturer){
+        menuToBeRendered = lecturerMenu;
+    }
+    else{
+        menuToBeRendered = userMenu;   
+    }
+
+       
+
 
         return(
             <div className="main">

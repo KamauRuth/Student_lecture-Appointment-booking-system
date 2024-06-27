@@ -5,14 +5,15 @@ import Register from './pages/register';
 import ForgotPassword from './pages/forgotpassword';
 import Home from './pages/Home';
 import { Toaster } from 'react-hot-toast';
-import ApplyLecturer from './pages/ApplyLecturer';
+import ApplyLecturer from './pages/RegisterLecturer.js';
 import Notifications from './pages/Notifications';
-import Userlist from './pages/Admin/UpdateAvailability.js';
-import Lecturerlist from './pages/Admin/BookedAppointments.js';
+// import Userlist from './pages/Admin/UpdateAvailability.js';
+// import Lecturerlist from './pages/Admin/BookedAppointments.js';
 import AppointmentBooking from './pages/Appointments';
 import Profile from './pages/Profile';
-import BookedAppointments from './pages/Admin/BookedAppointments.js';
-import UpdateAvailability from './pages/Admin/UpdateAvailability.js';
+import BookedAppointments from './pages/Lecturer/BookedAppointments.js';
+import UpdateAvailability from './pages/Lecturer/UpdateAvailability.js';
+import RegisterLecturer from './pages/RegisterLecturer.js';
 
 
 function App() {
@@ -84,6 +85,14 @@ function App() {
           path="/profile" element={
             <protectedRoute>
               <Profile />
+            </protectedRoute>
+          } />
+
+          
+        <Route
+          path="/register-lecturers" element={
+            <protectedRoute>
+              <RegisterLecturer />
             </protectedRoute>
           } />
 

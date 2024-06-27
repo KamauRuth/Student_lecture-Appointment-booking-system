@@ -14,6 +14,7 @@ function Register() {
     username: '',
     email: '',
     password: '',
+    role: 'student',
   });
 
   const handleChange = (e) => {
