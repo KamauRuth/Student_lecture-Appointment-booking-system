@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 import BookedAppointments from './pages/Lecturer/BookedAppointments.js';
 import UpdateAvailability from './pages/Lecturer/UpdateAvailability.js';
 import RegisterLecturer from './pages/RegisterLecturer.js';
+import LecturerLogin from './pages/lecturerLogin.js';
 
 
 function App() {
@@ -96,6 +97,12 @@ function App() {
             </protectedRoute>
           } />
 
+        <Route
+          path="/lecturer-login" element={
+            <protectedRoute>
+              <LecturerLogin />
+            </protectedRoute>
+          } />
 
 
       </Routes>

@@ -10,6 +10,7 @@ const dbConfig = require('./config/dbconfig.js');
 
 const userRouter = require('./Routes/user.js');
 const adminRouter = require('./Routes/admin.js');
+const lecturerRouter = require('./Routes/lecturer.js');
 const cors_options = {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   };
@@ -21,6 +22,7 @@ app.use(bodyParser.json());
 app.use(cors(cors_options));
 app.use('/api/user', userRouter);
 app.use('/api/admin', adminRouter)
+app.use('/api/lecturer', lecturerRouter);
 const port = process.env.PORT || 5000
 ;
 

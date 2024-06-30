@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const lecSchema = new mongoose.Schema({
-    userId:{
+    lecturerId:{
         type: String,
-        default: false
+        default: true
     },
     firstname: {
         type: String,
@@ -28,12 +28,12 @@ const lecSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    password: {
+        type: String,
+        required: [true, 'Please provide a password!']
+    },
     
     phoneNumber: {
-        type: String,
-        default: false
-    },
-    address: {
         type: String,
         default: false
     },
@@ -45,18 +45,15 @@ const lecSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    courses: {
+    availableDays: {
+        type: Array,
+        default: [] 
+    },
+    availableTime: {
         type: Array,
         default: []
     },
-    experience: {
-        type: String,
-        default: false
-    },
-    timings: {
-        type: Array,
-     
-    },
+
     status: {
         type: String,
         default: 'pending'

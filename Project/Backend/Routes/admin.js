@@ -4,6 +4,7 @@ const Lecturer = require("../Models/lecModel")
 const User = require('../Models/userModels')
 const Department = require('../Models/DeptModel')
 const authMiddleware = require("../middlewares/authMiddleware")
+const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 
 
@@ -22,7 +23,7 @@ adminRouter.post("/register-lecturers", async (req, res) => {
     console.log(req.body);
 
     try {
-        const userExists = await User.findOne({ email: req.body.email });
+        const userExists = await Lecturer.findOne({ email: req.body.email });
         console.log(userExists);
         if (userExists) {
             return res.status(400).send({ message: "User already exists", success: false });
@@ -38,6 +39,29 @@ adminRouter.post("/register-lecturers", async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).send({ message: "Error Registering", success: false });
+    }
+});
+
+adminRouter.post('/lecturer-login', async (req, res) => {
+    
+    console.log(req.body);
+   
+    try {
+        const user = await  Lecturer.findOne({ username: req.body.username });
+        if (!user) {
+            return res.status(200).send({ message: "User not found", success: false });
+        }
+        const isMatch = await bcrypt.compare(req.body.password, user.password);
+        if (!isMatch) {
+            return res.status(200).send({ message: "Invalid credentials", success: false });
+        } else {
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isLecturer: user.isLecturer } });
+
+        }
+    } catch (error) {
+        console.log("error is: ", error);
+        res.status(500).send({ message: "Error logging in", success: false });
     }
 });
 
@@ -101,11 +125,11 @@ adminRouter.post('/add-department', async (req, res) => {
 //     }
 // });
 
-adminRouter.get('/appointments', async (req, res) => {
+// adminRouter.get('/appointments', async (req, res) => {
 
-    const appointments = await Appointment.find();
-    res.json(appointments);
-});
+//     const appointments = await Appointment.find();
+//     res.json(appointments);
+// });
 
 adminRouter.post('/appointments/:id/accept', async (req, res) => {
     await Appointment.findByIdAndUpdate(req.params.id, { status: 'Accepted' });

@@ -50,6 +50,8 @@ userRouter.post('/login', async (req, res) => {
     }
 });
 
+
+
 userRouter.post("/get-user-info-by-id", async (req, res) => {
     let userId
     try {
@@ -126,17 +128,17 @@ const getUserInfoById = async (userId) => {
 
 //);
 
-userRouter.get('/api/user/profile', async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id).select('name email phone address');
-        if (!user) {
-            return res.status(404).send({ error: 'User not found' });
-        }
-        res.status(200).send({ user });
-    } catch (error) {
-        res.status(500).send({ error: 'Internal Server Error' });
-    }
-});
+// userRouter.get('/api/user/profile', async (req, res) => {
+//     try {
+//         const user = await User.findById(req.user._id).select('name email phone address');
+//         if (!user) {
+//             return res.status(404).send({ error: 'User not found' });
+//         }
+//         res.status(200).send({ user });
+//     } catch (error) {
+//         res.status(500).send({ error: 'Internal Server Error' });
+//     }
+// });
 
 userRouter.get('/get-all-department', async (req, res) => {
     
@@ -192,6 +194,38 @@ userRouter.post('/book-appointment', async (res, req) => {
     }
 
 })
+
+userRouter.post('/profile', authMiddleware, async (req, res) => {
+    try {
+        const userId = req.user.id; // The ID of the logged-in user
+
+        // Determine user type and fetch profile information accordingly
+        let user;
+        const isAdmin = req.user.isAdmin;
+        const isLecturer = req.user.isLecturer;
+
+        try {
+            if (isAdmin) {
+                user = await User.findById(userId);
+
+            } else if (isLecturer) {
+                user = await lecturer.findById(userId);
+            } else {
+                user = await User.findById(userId);
+            }
+
+            if (!user) {
+                return res.status(404).send({ message: "User not found", success: false });
+            }
+
+            res.status(200).send({ message: "Profile fetched successfully", success: true, user });
+        } catch (error) {
+            res.status(500).send({ message: "Error fetching profile", success: false });
+        }
+    } catch (error) {
+        res.status(500).send({ message: "Error fetching profile", success: false });
+    }
+});
 
 
 

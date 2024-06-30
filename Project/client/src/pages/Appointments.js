@@ -137,7 +137,7 @@ const navigate = useNavigate();
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Date" name="date" rules={[{ required: true, message: 'Please select a date!' }]}>
+          <Form.Item label="Day" name="day" rules={[{ required: true, message: 'Please select a date!' }]}>
             <DatePicker
               style={{ width: '100%' }}
               disabledDate={(current) => !availableDates.includes(current.format('YYYY-MM-DD'))}

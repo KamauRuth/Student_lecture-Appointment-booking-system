@@ -29,6 +29,10 @@ const userShema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    isUser:{
+        type: Boolean,
+        default: true,
+    },
     seenNotifications: {
         type: Array,
         default: []
