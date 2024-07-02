@@ -89,8 +89,6 @@ adminRouter.post('/add-department', async (req, res) => {
         if (departmentExists) {
             return res.status(400).send({ message: "Department already exists", success: false });
         }
-        
-
 
         const newDepartment = new Department({
             department: department,

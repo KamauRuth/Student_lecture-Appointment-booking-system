@@ -130,17 +130,7 @@ const getUserInfoById = async (userId) => {
 
 //);
 
-// userRouter.get('/api/user/profile', async (req, res) => {
-//     try {
-//         const user = await User.findById(req.user._id).select('name email phone address');
-//         if (!user) {
-//             return res.status(404).send({ error: 'User not found' });
-//         }
-//         res.status(200).send({ user });
-//     } catch (error) {
-//         res.status(500).send({ error: 'Internal Server Error' });
-//     }
-// });
+
 
 userRouter.get('/get-all-department', async (req, res) => {
     

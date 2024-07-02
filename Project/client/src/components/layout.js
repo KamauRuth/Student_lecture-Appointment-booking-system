@@ -53,6 +53,11 @@ function Layout ({children}) {
 
     const adminMenu = [
         {
+            name: 'Add Department',
+            path: '/add-department',
+            icon:'ri-add-circle-line',
+        },
+        {
             name: 'Register Lecturers',
             path: '/register-lecturers',
             icon:'ri-user-add-line'

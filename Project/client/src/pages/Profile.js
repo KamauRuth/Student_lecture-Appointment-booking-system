@@ -21,29 +21,7 @@ function Profile() {
     
     }
 
-  //   try {
-  //     const response = await axios.get('/api/user/profile', { username: parsedUser.username, email: parsedUser.email });
-  //     console.log(response.data);
-  //     if (response.data.success) {
-  //       setProfile(response.data.user.username);
-  //     } else {
-  //       setError('Error fetching profile');
-  //     }
-  //   } catch (error) {
-  //     if (error.response) {
-  //       setError(error.response.data.message);
-  //       if (error.response.status === 401) {
-  //         window.location.href = '/login';
-  //       }
-  //     } else {
-  //       setError(toast.message);
-  //     }
-  //   }
-  //};
-
-  // useEffect(() => {
-  //   fetchProfile();
-  // }, []);
+ 
 
   return (
     <Layout>

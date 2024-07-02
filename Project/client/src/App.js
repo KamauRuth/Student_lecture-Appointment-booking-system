@@ -15,6 +15,7 @@ import BookedAppointments from './pages/Lecturer/BookedAppointments.js';
 import UpdateAvailability from './pages/Lecturer/UpdateAvailability.js';
 import RegisterLecturer from './pages/RegisterLecturer.js';
 import LecturerLogin from './pages/lecturerLogin.js';
+import AddDepartment from './pages/addDepartment.js';
 
 
 function App() {
@@ -103,6 +104,13 @@ function App() {
               <LecturerLogin />
             </protectedRoute>
           } />
+
+          <Route
+          path="/add-department" element={
+            <protectedRoute>
+              <AddDepartment />
+            </protectedRoute>
+          } />  
 
 
       </Routes>

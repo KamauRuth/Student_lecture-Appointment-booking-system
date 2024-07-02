@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const lecSchema = new mongoose.Schema({
-    lecturerId:{
-        type: String,
-        default: true
-    },
+   
     firstname: {
         type: String,
         required: [true, 'Please tell us your name!']
@@ -33,10 +30,6 @@ const lecSchema = new mongoose.Schema({
         required: [true, 'Please provide a password!']
     },
     
-    phoneNumber: {
-        type: String,
-        default: false
-    },
     seenNotifications: {
         type: Array,
         default: []
@@ -53,11 +46,6 @@ const lecSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-
-    status: {
-        type: String,
-        default: 'pending'
-    }
  
 }, {
     timestamps: true

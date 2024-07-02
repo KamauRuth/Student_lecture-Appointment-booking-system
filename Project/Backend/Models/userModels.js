@@ -24,7 +24,14 @@ const userShema = new mongoose.Schema({
     isLecturer:{
         type: Boolean,
         default: false,
-    
+    },
+    isAdmin:{
+        type: Boolean,
+        default: false,
+    },
+    isUser:{
+        type: Boolean,
+        default: true,
     },
     seenNotifications: {
         type: Array,

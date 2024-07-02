@@ -33,7 +33,7 @@ const navigate = useNavigate();
 
     useEffect(() => {
       fetchDepartments();
-      fetchLecturers();
+      // fetchLecturers();
     }, []);
 
       // Fetch departments
