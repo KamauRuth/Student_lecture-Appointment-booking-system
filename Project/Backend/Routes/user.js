@@ -33,15 +33,17 @@ userRouter.post('/register', async (req, res) => {
 userRouter.post('/login', async (req, res) => {
     try {
         const user = await User.findOne({ username: req.body.username });
+       
         if (!user) {
             return res.status(200).send({ message: "User not found", success: false });
         }
+        
         const isMatch = await bcrypt.compare(req.body.password, user.password);
         if (!isMatch) {
             return res.status(200).send({ message: "Invalid credentials", success: false });
         } else {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isAdmin: user.isAdmin } });
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isAdmin: user.isAdmin, email: user.email } });
 
         }
     } catch (error) {
@@ -153,7 +155,19 @@ userRouter.get('/get-all-department', async (req, res) => {
     }
 });
 
-userRouter.post('/get-lecturer-by-department', async (req, res) => {
+userRouter.get('/get-all-lecturers', async (req, res) => {
+
+    try {
+
+        const lecturers = await lecturer.find();
+        console.log(lecturers);
+        res.json(lecturers);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching lecturers', error: error.message });
+    }
+});
+
+userRouter.get('/get-lecturer-by-department', async (req, res) => {
     const { department } = req.body;
     try {
         const lecturers = await lecturer.find({ department });
@@ -196,35 +210,27 @@ userRouter.post('/book-appointment', async (res, req) => {
 })
 
 userRouter.post('/profile', authMiddleware, async (req, res) => {
-    try {
-        const userId = req.user.id; // The ID of the logged-in user
+ // The ID of the logged-in user
 
         // Determine user type and fetch profile information accordingly
-        let user;
-        const isAdmin = req.user.isAdmin;
-        const isLecturer = req.user.isLecturer;
+        // let user;
+        // const isAdmin = req.user.isAdmin;
+        // const isLecturer = req.user.isLecturer;
 
         try {
-            if (isAdmin) {
-                user = await User.findById(userId);
+            
+            const user = await User.findById(req.user._id).select('username', 'email' );
 
-            } else if (isLecturer) {
-                user = await lecturer.findById(userId);
-            } else {
-                user = await User.findById(userId);
-            }
 
             if (!user) {
                 return res.status(404).send({ message: "User not found", success: false });
             }
 
-            res.status(200).send({ message: "Profile fetched successfully", success: true, user });
+            res.status(200).send({ message: "Profile fetched successfully", success: true, user:{username: user.username, email:user.email} });
         } catch (error) {
             res.status(500).send({ message: "Error fetching profile", success: false });
         }
-    } catch (error) {
-        res.status(500).send({ message: "Error fetching profile", success: false });
-    }
+  
 });
 
 

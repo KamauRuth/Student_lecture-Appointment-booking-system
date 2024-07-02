@@ -22,9 +22,9 @@ function Appointments() {
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(null);
   const [reason, setReason] = useState('');
-  const [lecturers, setLecturers] = useState([]);
-  const [filteredLecturers, setFilteredLecturers] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [lecturer, setLecturers] = useState([]);
+  //const [filteredLecturers, setFilteredLecturers] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState([]);
   const [selectedLecturer, setSelectedLecturer] = useState('');
 const navigate = useNavigate();
   
@@ -48,40 +48,35 @@ const navigate = useNavigate();
       }
   
       // Fetch lecturers
-      const fetchLecturers = async ()=> {
-        try{
-          await axios.post('/api/user/get-lecturer-by-department')
-          .then(response => {
-          setLecturers(response.data);
-        })
-      }catch(error)  {
-          toast.error('Error fetching lecturers: ' + error.message);
-        };
-      }
-  
-    useEffect(() => {
-   
-      // Filter lecturers based on selected department
-    
-      if (selectedDepartment) {
-        const filtered = lecturers.filter(lecturer => lecturer.departmentId === selectedDepartment);
-        setFilteredLecturers(filtered);
-      } else {
-        setFilteredLecturers([]);
-      }
-    }, [selectedDepartment, lecturers]);
-  
+      const fetchLecturers = async (department) => {
+
+        try {
+          const response = await axios.get('/api/user/get-lecturer-by-department', {department: department})
+          console.log(response);
+          response.data.map((e) => 
+          setLecturers([...lecturer, e.username]))
+        
+        }catch(error) {
+              toast.error('Error fetching lecturers: ' + error.message);
+            };
+        
+      };
+      const handleDepartmentChange = (value) => {
+        setSelectedDepartment(value);
+        fetchLecturers(value); // Fetch lecturers when department changes
+      };
+
     useEffect(() => {
       // Set available dates and times based on selected lecturer
       if (selectedLecturer) {
-        const lecturer = lecturers.find(l => l._id === selectedLecturer);
-        setAvailableDates(lecturer ? lecturer.availableDates : []);
-        setAvailableTimes(lecturer ? lecturer.availableTimes : []);
+        const lecturers = lecturer.find(l => l._id === selectedLecturer);
+        setAvailableDates(lecturer ? lecturers.availableDates : []);
+        setAvailableTimes(lecturer ? lecturers.availableTimes : []);
       } else {
         setAvailableDates([]);
         setAvailableTimes([]);
       }
-    }, [selectedLecturer, lecturers]);
+    }, [selectedLecturer, lecturer]);
   
     // const handleSubmit = () => {
     //   form.validateFields().then(values => {
@@ -124,16 +119,16 @@ const navigate = useNavigate();
             <Input value={email} onChange={(e) => setEmail(e.target.value)} />
           </Form.Item>
           <Form.Item label="Select Department" name="department" rules={[{ required: true, message: 'Please select a Department!' }]}>
-            <Select onChange={(value) => setSelectedDepartment(value)}>
+            <Select onChange={handleDepartmentChange}>
               {department?.map(department => (
                 <Option key={department._id} value = {department._id}>{department.department}</Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Select Lecturer" name="lecturer" rules={[{ required: true, message: 'Please select a lecturer!' }]}>
-            <Select onChange={(value) => setSelectedLecturer(value)}>
-              {filteredLecturers.map(lecturer => (
-                <Option key={lecturer.id} value={lecturer.id}>{lecturer.name}</Option>
+          <Form.Item label="Lecturer" name="lecturer" rules={[{ required: true, message: 'Please select a lecturer!' }]}>
+          <Select onChange={(value) => setLecturers(value)} placeholder="Select a lecturer" disabled={!selectedDepartment}>
+              {lecturer?.map(lecturer => (
+                <Option key={lecturer.username} value={lecturer.username}>{lecturer.username}</Option>
               ))}
             </Select>
           </Form.Item>
