@@ -158,9 +158,10 @@ userRouter.get('/get-all-lecturers', async (req, res) => {
 });
 
 userRouter.get('/get-lecturer-by-department', async (req, res) => {
-    const { department } = req.body;
+    const departmentId = req.body.department;
+
     try {
-        const lecturers = await lecturer.find({ department });
+        const lecturers = await lecturer.find({ departmentId });
         res.json(lecturers);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching lecturers', error: error.message });

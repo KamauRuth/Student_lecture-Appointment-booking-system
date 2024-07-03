@@ -33,7 +33,7 @@ const navigate = useNavigate();
 
     useEffect(() => {
       fetchDepartments();
-      // fetchLecturers();
+      fetchLecturers();
     }, []);
 
       // Fetch departments
@@ -48,19 +48,24 @@ const navigate = useNavigate();
       }
   
       // Fetch lecturers
-      const fetchLecturers = async (department) => {
+    
+        //     const response = await axios.get('/api/user/get-lecturer-by-department' , {department: department});
 
-        try {
-          const response = await axios.get('/api/user/get-lecturer-by-department', {department: department})
-          console.log(response);
-          response.data.map((e) => 
-          setLecturers([...lecturer, e.username]))
-        
-        }catch(error) {
-              toast.error('Error fetching lecturers: ' + error.message);
-            };
-        
-      };
+        //     console.log(response)
+        //     setLecturers(response.data);
+        //   } catch (error) {
+        //     toast.error('Error fetching lecturers: ' + error.message);
+        //   }
+        // };
+         // Fetch lecturers
+  const fetchLecturers = async (departmentId) => {
+    try {
+      const response = await axios.get('/api/user/get-lecturer-by-department', { params: { department: departmentId } });
+      setLecturers(response.data);
+    } catch (error) {
+      toast.error('Error fetching lecturers: ' + error.message);
+    }
+  };
       const handleDepartmentChange = (value) => {
         setSelectedDepartment(value);
         fetchLecturers(value); // Fetch lecturers when department changes
@@ -126,9 +131,9 @@ const navigate = useNavigate();
             </Select>
           </Form.Item>
           <Form.Item label="Lecturer" name="lecturer" rules={[{ required: true, message: 'Please select a lecturer!' }]}>
-          <Select onChange={(value) => setLecturers(value)} placeholder="Select a lecturer" disabled={!selectedDepartment}>
+          <Select onChange={(value) => setSelectedLecturer(value)} placeholder="Select a lecturer" disabled={!selectedDepartment}>
               {lecturer?.map(lecturer => (
-                <Option key={lecturer.username} value={lecturer.username}>{lecturer.username}</Option>
+                <Option key={lecturer._id} value={lecturer._id}>{lecturer.username}</Option>
               ))}
             </Select>
           </Form.Item>

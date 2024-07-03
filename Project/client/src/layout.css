@@ -12,7 +12,7 @@
     border-radius: 5px;
     box-shadow: 0 0 2px gray;
     margin-right: 20px;
-    height: 100vh;
+    height: 120vh;
     padding: 15px;
     color: black;
     
@@ -37,7 +37,7 @@
     background-color: white; 
     border-radius: 5px;
     box-shadow: 0 0 2px gray;
-    height: 95vh;
+    height: 120vh;
     width: 100%;
     color: black;
 }
