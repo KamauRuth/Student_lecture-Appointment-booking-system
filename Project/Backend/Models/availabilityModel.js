@@ -1,15 +1,16 @@
 const mongoose = require ('mongoose');
 const availabilitySchema = new mongoose.Schema({
-    lecturerId: {
-         type: mongoose.Schema.Types.ObjectId, 
-         ref: 'Lecturer', required: true 
-        },
-    availableDay:{
-      type: String,
+  lecturerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Lecturer',
+    required: true
+  },
+    availableDays:{
+      type: [],
       required: true
     },
-    availableTime: {
-        type: String,
+    availableTimes: {
+        type: [],
         required: true,
     }
   });

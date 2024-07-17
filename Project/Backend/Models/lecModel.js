@@ -42,7 +42,7 @@ const lecSchema = new mongoose.Schema({
         type: Array,
         default: [] 
     },
-    availableTime: {
+    availableTimes: {
         type: Array,
         default: []
     },

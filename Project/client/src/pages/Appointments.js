@@ -6,6 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 
+
 const { Title } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
@@ -22,42 +23,27 @@ function Appointments() {
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(null);
   const [reason, setReason] = useState('');
-  const [lecturer, setLecturers] = useState([]);
-  //const [filteredLecturers, setFilteredLecturers] = useState([]);
-  const [selectedDepartment, setSelectedDepartment] = useState([]);
+  const [lecturers, setLecturers] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedLecturer, setSelectedLecturer] = useState('');
-const navigate = useNavigate();
-  
-  const [department, setDepartment] = useState([]);
+  const navigate = useNavigate();
+  const [departments, setDepartments] = useState([]);
 
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
 
-    useEffect(() => {
-      fetchDepartments();
-      fetchLecturers();
-    }, []);
+  // Fetch departments
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get('/api/user/get-all-department');
+      setDepartments(response.data);
+    } catch (error) {
+      toast.error('Error fetching departments: ' + error.message);
+    }
+  }
 
-      // Fetch departments
-      const fetchDepartments = async () =>{
-        try{
-         const response= await axios.get('/api/user/get-all-department')
-          setDepartment(response.data);
-        
-      }catch(error) {
-          toast.error('Error fetching departments: ' + error.message);
-        };
-      }
-  
-      // Fetch lecturers
-    
-        //     const response = await axios.get('/api/user/get-lecturer-by-department' , {department: department});
-
-        //     console.log(response)
-        //     setLecturers(response.data);
-        //   } catch (error) {
-        //     toast.error('Error fetching lecturers: ' + error.message);
-        //   }
-        // };
-         // Fetch lecturers
+  // Fetch lecturers
   const fetchLecturers = async (departmentId) => {
     try {
       const response = await axios.get('/api/user/get-lecturer-by-department', { params: { department: departmentId } });
@@ -66,57 +52,54 @@ const navigate = useNavigate();
       toast.error('Error fetching lecturers: ' + error.message);
     }
   };
-      const handleDepartmentChange = (value) => {
-        setSelectedDepartment(value);
-        fetchLecturers(value); // Fetch lecturers when department changes
-      };
 
-    useEffect(() => {
-      // Set available dates and times based on selected lecturer
-      if (selectedLecturer) {
-        const lecturers = lecturer.find(l => l._id === selectedLecturer);
-        setAvailableDates(lecturer ? lecturers.availableDates : []);
-        setAvailableTimes(lecturer ? lecturers.availableTimes : []);
+  const handleDepartmentChange = (value) => {
+    setSelectedDepartment(value);
+    fetchLecturers(value); // Fetch lecturers when department changes
+  };
+
+  useEffect(() => {
+    // Set available dates and times based on selected lecturer
+    if (selectedLecturer) {
+      const lecturer = lecturers.find(l => l._id === selectedLecturer);
+      setAvailableDates(lecturer ? lecturer.availableDates : []);
+      setAvailableTimes(lecturer ? lecturer.availableTimes : []);
+    } else {
+      setAvailableDates([]);
+      setAvailableTimes([]);
+    }
+  }, [selectedLecturer, lecturers]);
+
+  const onFinish = async (values) => {
+    try {
+     
+      const {  username, email, reason } = values;
+      const response = await axios.post('/api/user/book-appointment', {
+        ...values,
+        lecturerId: selectedLecturer,
+        userInfo: {username,  email},
+        date: date.format('YYYY-MM-DD'),
+        time: time.format('HH:mm') ,
+        reason,
+      });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
       } else {
-        setAvailableDates([]);
-        setAvailableTimes([]);
+        toast.error(response.data.message);
       }
-    }, [selectedLecturer, lecturer]);
-  
-    // const handleSubmit = () => {
-    //   form.validateFields().then(values => {
-    //     console.log('Appointment booked:', { ...values, date, time });
-    //   }).catch(info => {
-    //     console.log('Validate Failed:', info);
-    //   });
-    // };
-    const onFinish = async (e) => {
-      e.preventDefault();
-      try {
-      
-        const response = await axios.post('/api/user/book-appointment', form)
-        console.log(response);
-        const data = await response.data;
-      
-        if (data.success) {
-          toast.success(response.data.message);
-          setTimeout(() => {
-            navigate('/');
-          }, 2000); 
-        } else {
-          toast.error(response.data.message);
-        }
-      } catch (error) {
-        console.log("error is:", error.message)
-        toast.error('An error occurred');
-      }
-    };
+    } catch (error) {
+      toast.error('An error occurred: ' + error.message);
+    }
+  };
 
   return (
     <Layout>
       <div style={{ padding: '50px' }}>
         <Title level={2}>Book an Appointment</Title>
-        <Form form={form} layout="vertical" onSubmit={onFinish}>
+        <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input your name!' }]}>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </Form.Item>
@@ -125,19 +108,19 @@ const navigate = useNavigate();
           </Form.Item>
           <Form.Item label="Select Department" name="department" rules={[{ required: true, message: 'Please select a Department!' }]}>
             <Select onChange={handleDepartmentChange}>
-              {department?.map(department => (
-                <Option key={department._id} value = {department._id}>{department.department}</Option>
+              {departments.map(department => (
+                <Option key={department._id} value={department._id}>{department.department}</Option>
               ))}
             </Select>
           </Form.Item>
           <Form.Item label="Lecturer" name="lecturer" rules={[{ required: true, message: 'Please select a lecturer!' }]}>
-          <Select onChange={(value) => setSelectedLecturer(value)} placeholder="Select a lecturer" disabled={!selectedDepartment}>
-              {lecturer?.map(lecturer => (
+            <Select onChange={(value) => setSelectedLecturer(value)} placeholder="Select a lecturer" disabled={!selectedDepartment}>
+              {lecturers.map(lecturer => (
                 <Option key={lecturer._id} value={lecturer._id}>{lecturer.username}</Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item label="Day" name="day" rules={[{ required: true, message: 'Please select a date!' }]}>
+          <Form.Item label="Date" name="date" rules={[{ required: true, message: 'Please select a date!' }]}>
             <DatePicker
               style={{ width: '100%' }}
               disabledDate={(current) => !availableDates.includes(current.format('YYYY-MM-DD'))}
@@ -152,7 +135,7 @@ const navigate = useNavigate();
                 return [...Array(24).keys()].filter(hour => !availableHours.includes(hour));
               }}
               onChange={(time) => setTime(time)}
-              defaultOpenValue={moment('00:00:00', 'HH:mm:ss')}
+              defaultOpenValue={moment('00:00', 'HH:mm')}
             />
           </Form.Item>
           <Form.Item label="Reason for Booking" name="reason" rules={[{ required: true, message: 'Please provide a reason!' }]}>
@@ -166,5 +149,4 @@ const navigate = useNavigate();
     </Layout>
   );
 }
-
 export default Appointments;

@@ -41,7 +41,11 @@ const userShema = new mongoose.Schema({
         type: Array,
         default: []
     },
-    availableTimes: {
+    date: {
+        type: Array,
+        default: []
+    },
+    time: {
         type: Array,
         default: []
     }

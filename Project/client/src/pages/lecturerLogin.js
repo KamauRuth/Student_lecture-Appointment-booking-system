@@ -36,6 +36,7 @@ function LecturerLogin() {
                 toast.success(response.data.message);
                 localStorage.setItem('token', response.data.data);
                 localStorage.setItem('user', JSON.stringify(response.data.user));
+            
                 setTimeout(() => {
                     navigate('/');
                 }, 2000);

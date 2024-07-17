@@ -10,6 +10,7 @@ const authMiddleware= async(req, res, next) => {
                 return res.status(401).send({message: "Unauthorized", success: false})
             }else{
                 req.userId = decoded.id;
+                req.lecturerId = decoded.id;
                 next();
             }
 
@@ -20,5 +21,7 @@ const authMiddleware= async(req, res, next) => {
    }
 
 }
+
+
 
 module.exports = authMiddleware;

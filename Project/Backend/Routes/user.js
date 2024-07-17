@@ -3,10 +3,11 @@ const userRouter = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../Models/userModels.js');
 const lecturer = require('../Models/lecModel.js');
-const Department = require ('../Models/DeptModel.js')
+const Department = require('../Models/DeptModel.js')
+const Booking = require('../Models/appointmentModel.js')
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("../middlewares/authMiddleware");// Ensure the correct path to your User model
-
+const authMiddleware = require("../middlewares/authMiddleware");
+const moment = require('moment');
 
 userRouter.post('/register', async (req, res) => {
 
@@ -33,11 +34,11 @@ userRouter.post('/register', async (req, res) => {
 userRouter.post('/login', async (req, res) => {
     try {
         const user = await User.findOne({ username: req.body.username });
-       
+
         if (!user) {
             return res.status(200).send({ message: "User not found", success: false });
         }
-        
+
         const isMatch = await bcrypt.compare(req.body.password, user.password);
         if (!isMatch) {
             return res.status(200).send({ message: "Invalid credentials", success: false });
@@ -67,7 +68,7 @@ userRouter.post("/get-user-info-by-id", async (req, res) => {
                 userId = decoded.id;
             }
 
-        })
+        });
 
 
         console.log("Request received with userId:", userId);
@@ -133,8 +134,8 @@ const getUserInfoById = async (userId) => {
 
 
 userRouter.get('/get-all-department', async (req, res) => {
-    
-    
+
+
     try {
 
         const department = await Department.find();
@@ -169,15 +170,29 @@ userRouter.get('/get-lecturer-by-department', async (req, res) => {
 });
 
 
-userRouter.post('/book-appointment', async (res, req) => {
+userRouter.post('/book-appointment', async (req, res) => {
+    const { date, time, userInfo, lecturerId } = req.body;
     try {
-        const userId = await User.findOne({ username: req.body.username });
-        const newBooking = new Booking({ ...req.body, userId: userId._id });
+        req.body.date = moment(req.body.date, 'YYYY-MM-DD').toISOString();
+        req.body.time = moment(req.body.time, 'HH:mm').toISOString('HH:mm');
+        const appointment = await Booking.findOne({ date, time, lecturerId});
+        const newBooking = new Booking({
+            ...req.body,
+            userId: User._id,
+            lecturerId,
+            date,
+            time,
+            userInfo
+        });
+
+
+        await newBooking.save();
+
 
 
         //send notification to lecturer
 
-        const lecturerUser = await User.findOne({ isLecturer: true });
+        const lecturerUser = await lecturer.findOne({ isLecturer: true });
         console.log(lecturerUser);
         const unseenNotifications = lecturerUser.unseenNotifications;
 
@@ -187,41 +202,40 @@ userRouter.post('/book-appointment', async (res, req) => {
             data: {
                 username: User.username,
                 email: User.email,
-                reason: '',
+                reason: req.body.reason,
             },
             onclick: '/lecturer/booked-appointments'
         });
-        await User.findByIdAndUpdate(adminUser._id, { unseenNotifications });
-        return res.status(200).json({ message: "" });
+        await User.findByIdAndUpdate(lecturerUser._id, { unseenNotifications });
     } catch (error) {
         console.log("Error is:", error.message);
-        res.status(500).json({ message: "Server Error" });
-    }
 
-})
+    }
+});
+
 
 userRouter.post('/profile', authMiddleware, async (req, res) => {
- // The ID of the logged-in user
+    // The ID of the logged-in user
 
-        // Determine user type and fetch profile information accordingly
-        // let user;
-        // const isAdmin = req.user.isAdmin;
-        // const isLecturer = req.user.isLecturer;
+    // Determine user type and fetch profile information accordingly
+    // let user;
+    // const isAdmin = req.user.isAdmin;
+    // const isLecturer = req.user.isLecturer;
 
-        try {
-            
-            const user = await User.findById(req.user._id).select('username', 'email' );
+    try {
+
+        const user = await User.findById(req.user._id).select('username', 'email');
 
 
-            if (!user) {
-                return res.status(404).send({ message: "User not found", success: false });
-            }
-
-            res.status(200).send({ message: "Profile fetched successfully", success: true, user:{username: user.username, email:user.email} });
-        } catch (error) {
-            res.status(500).send({ message: "Error fetching profile", success: false });
+        if (!user) {
+            return res.status(404).send({ message: "User not found", success: false });
         }
-  
+
+        res.status(200).send({ message: "Profile fetched successfully", success: true, user: { username: user.username, email: user.email } });
+    } catch (error) {
+        res.status(500).send({ message: "Error fetching profile", success: false });
+    }
+
 });
 
 

@@ -56,7 +56,7 @@ adminRouter.post('/lecturer-login', async (req, res) => {
             return res.status(200).send({ message: "Invalid credentials", success: false });
         } else {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isLecturer: user.isLecturer } });
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isLecturer: user.isLecturer, userId: user._id} });
 
         }
     } catch (error) {
@@ -89,6 +89,8 @@ adminRouter.post('/add-department', async (req, res) => {
         if (departmentExists) {
             return res.status(400).send({ message: "Department already exists", success: false });
         }
+        
+
 
         const newDepartment = new Department({
             department: department,
@@ -102,32 +104,8 @@ adminRouter.post('/add-department', async (req, res) => {
     }
 });
 
-// adminRouter.post('/get-all-department', async (req, res) => {
-//     console.log(department)
-//     try {
-        
-//         const department = await Department.find();
-//         res.json(department);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error fetching department', error: error.message });
-//     }
-// });
 
-// adminRouter.post('/get-lecturer-by-department', async (req, res) => {
-//     const { department } = req.body;
-//     try {
-//         const lecturers = await Lecturer.find({ department });
-//         res.json(lecturers);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error fetching lecturers', error: error.message });
-//     }
-// });
 
-// adminRouter.get('/appointments', async (req, res) => {
-
-//     const appointments = await Appointment.find();
-//     res.json(appointments);
-// });
 
 adminRouter.post('/appointments/:id/accept', async (req, res) => {
     await Appointment.findByIdAndUpdate(req.params.id, { status: 'Accepted' });

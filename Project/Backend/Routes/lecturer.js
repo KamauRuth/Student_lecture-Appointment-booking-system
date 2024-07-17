@@ -4,23 +4,37 @@ const bcrypt = require('bcryptjs');
 const User = require('../Models/userModels.js');
 const Lecturer = require('../Models/lecModel.js');
 const Department = require('../Models/DeptModel.js')
-const availability = require ('../Models/availabilityModel.js')
+const Availability = require('../Models/availabilityModel.js')
 const jwt = require("jsonwebtoken");
-const authMiddleware = require("../middlewares/authMiddleware");// Ensure the correct path to your User model
+const authMiddleware = require("../middlewares/authMiddleware");
+
 
 lecturerRouter.post('/update-availability', async (req, res) => {
-    const { lecturerId, availableDays, availableTimes } = req.body;
+    const lecturer = req.lecturerId;
+  
+    const { lecturerId } = Lecturer.findById;
+    const { availableDays, availableTimes } = req.body;
+    //const lecturer = await Lecturer.findById(lecturerId);
+
+  
+    console.log(lecturerId, availableDays, availableTimes);
+    
     try {
-        let availability = await availability.findOne({ lecturerId });
+        const availability = await Availability.findOne({ lecturerId });
         if (availability) {
             availability.availableDays = availableDays;
             availability.availableTimes = availableTimes;
         } else {
-            availability = new availability({ lecturerId, availableDays, availableTimes });
-        }
-        await availability.save();
-        res.status(200).send({ message: "Availability updated successfully", success: true });
-    } catch (error) {
+            const token = jwt.sign({ id: lecturerId }, process.env.JWT_SECRET, { expiresIn: "1d" });
+            const updatedAvailability = new Availability( req.body );
+            await updatedAvailability.save();
+            res.status(200).send({ message: "Availability updated successfully", success: true , data: token});
+    }
+    }
+    catch (error) {
+
+        console.log(error);
+
         res.status(500).send({ message: "Error updating availability", success: false });
     }
 });
@@ -28,11 +42,11 @@ lecturerRouter.post('/update-availability', async (req, res) => {
 lecturerRouter.post('/get-lecturer-by-department', async (req, res) => {
     try {
         const lecturers = await Lecturer.find({ department: req.body.department });
-        const lecturerIds = lecturers.map(lecturer => lecturer._id);
-        const availabilities = await availability.find({ lecturerId: { $in: lecturerIds } });
-        
+        const lecturerId = lecturers.map(lecturer => lecturer._id);
+        const availabilities = await Availability.find({ lecturerId: lecturerId });
+
         const lecturersWithAvailability = lecturers.map(lecturer => {
-            const availability = availabilities.find(a => a.lecturerId.equals(lecturer._id));
+            const availability = Availabilities.find(a => a.lecturerId.equals(lecturer._id));
             return {
                 ...lecturer._doc,
                 availableDays: availability ? availability.availableDays : [],
