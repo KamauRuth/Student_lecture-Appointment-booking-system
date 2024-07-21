@@ -4,53 +4,49 @@ const bcrypt = require('bcryptjs');
 const User = require('../Models/userModels.js');
 const Lecturer = require('../Models/lecModel.js');
 const Department = require('../Models/DeptModel.js')
-const Availability = require('../Models/availabilityModel.js')
+
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 
+
 lecturerRouter.post('/update-availability', async (req, res) => {
-    const lecturer = req.lecturerId;
-  
-    const { lecturerId } = Lecturer.findById;
-    const { availableDays, availableTimes } = req.body;
-    //const lecturer = await Lecturer.findById(lecturerId);
+    const { lecturerId, availableDays } = req.body;
 
-  
-    console.log(lecturerId, availableDays, availableTimes);
-    
     try {
-        const availability = await Availability.findOne({ lecturerId });
-        if (availability) {
-            availability.availableDays = availableDays;
-            availability.availableTimes = availableTimes;
+        // Find the lecturer by _id (ObjectId)
+        const lecturer = await Lecturer.findById(lecturerId);
+        console.log(lecturer);
+
+        if (lecturer) {
+            // Update the availableDays field
+            lecturer.availableDays = availableDays;
+            await lecturer.save();
+            res.status(200).send({ message: "Availability updated successfully", success: true });
         } else {
-            const token = jwt.sign({ id: lecturerId }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            const updatedAvailability = new Availability( req.body );
-            await updatedAvailability.save();
-            res.status(200).send({ message: "Availability updated successfully", success: true , data: token});
-    }
-    }
-    catch (error) {
-
+            res.status(400).send({ message: "Lecturer not found", success: false });
+        }
+    } catch (error) {
         console.log(error);
-
         res.status(500).send({ message: "Error updating availability", success: false });
     }
 });
+
+
+
 
 lecturerRouter.post('/get-lecturer-by-department', async (req, res) => {
     try {
         const lecturers = await Lecturer.find({ department: req.body.department });
         const lecturerId = lecturers.map(lecturer => lecturer._id);
-        const availabilities = await Availability.find({ lecturerId: lecturerId });
+        const availabilities = await Lecturer.find({ lecturerId: lecturerId });
 
         const lecturersWithAvailability = lecturers.map(lecturer => {
-            const availability = Availabilities.find(a => a.lecturerId.equals(lecturer._id));
+            const availability = Lecturer.find(a => a.lecturerId.equals(lecturer._id));
             return {
                 ...lecturer._doc,
                 availableDays: availability ? availability.availableDays : [],
-                availableTimes: availability ? availability.availableTimes : [],
+                
             };
         });
 

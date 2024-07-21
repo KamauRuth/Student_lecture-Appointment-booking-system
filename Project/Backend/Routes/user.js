@@ -93,46 +93,6 @@ const getUserInfoById = async (userId) => {
 
 }
 
-// userRouter.post('/apply-lecturer', async (req, res) => {
-
-//     try{
-//         // get user id from username
-//         const userId = await User.findOne({username: req.body.username});
-
-//         const newlecturer = new lecturer({...req.body , status : 'pending', userId: userId._id} );
-//         await newlecturer.save();
-//         // send notification to admin 
-//         const adminUser = await User.findOne({isAdmin: true});
-//         console.log(adminUser);
-//         const unseenNotifications = adminUser.unseenNotifications;
-
-//         unseenNotifications.push({
-//             type: "New lecturer application",
-//             message: "New lecturer application",
-//             data:{
-//                 userId: newlecturer.userId,
-//                 username: newlecturer.username,
-//                 email: newlecturer.email
-//             },
-//             onclick : '/admin/lecturer-applications'
-//         });
-//         await User.findByIdAndUpdate(adminUser._id, {unseenNotifications});
-//         return res.status(200).json({message: "aplication received"});
-//     } catch (error) {
-//         console.log("Error is:", error.message);
-//         res.status(500).json({ message: "Server Error" });
-//     }
-
-// }
-
-
-
-
-
-//);
-
-
-
 userRouter.get('/get-all-department', async (req, res) => {
 
 
