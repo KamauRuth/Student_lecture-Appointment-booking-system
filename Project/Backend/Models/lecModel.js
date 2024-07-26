@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const lecSchema = new mongoose.Schema({
-   lecturerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'lecModel',
-    },
+//    lecturerId: {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: 'lecModel',
+//     },
     firstname: {
         type: String,
         required: [true, 'Please tell us your name!']

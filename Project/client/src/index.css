@@ -169,3 +169,19 @@ button {
   color: white;
 }
 
+.daypicker {
+  display: flex;
+  font-weight: 700;
+  justify-content: left;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.timepicker {
+  display: flex;
+  font-weight: 700;
+  justify-content: left;
+  align-items: center;
+  margin-top: 300px;
+}
+

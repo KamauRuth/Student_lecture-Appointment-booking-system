@@ -56,7 +56,7 @@ adminRouter.post('/lecturer-login', async (req, res) => {
             return res.status(200).send({ message: "Invalid credentials", success: false });
         } else {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isLecturer: user.isLecturer, userId: user._id} });
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isLecturer: user.isLecturer, userId: user._id, email: user.email} });
 
         }
     } catch (error) {

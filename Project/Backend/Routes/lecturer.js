@@ -11,27 +11,31 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 
 lecturerRouter.post('/update-availability', async (req, res) => {
-    const { lecturerId, availableDays } = req.body;
-
+    const { lecturerId, availabilities}= req.body;
+    
+    
+    if (!lecturerId) {
+        return res.status(400).send({ message: "Lecturer ID is required", success: false });
+    }
     try {
-        // Find the lecturer by _id (ObjectId)
-        const lecturer = await Lecturer.findById(lecturerId);
-        console.log(lecturer);
+        // Ensure lecturerId is in the correct format, if necessary
+        // const formattedLecturerId = mongoose.Types.ObjectId(lecturerId);
+
+        const lecturer = await Lecturer.findById({lecturerId});
 
         if (lecturer) {
-            // Update the availableDays field
-            lecturer.availableDays = availableDays;
+            console.log('Lecturer found:', lecturer);
+            lecturer.availabilities = availabilities;
             await lecturer.save();
             res.status(200).send({ message: "Availability updated successfully", success: true });
         } else {
             res.status(400).send({ message: "Lecturer not found", success: false });
         }
     } catch (error) {
-        console.log(error);
+        console.error("Error updating availability:", error);
         res.status(500).send({ message: "Error updating availability", success: false });
     }
 });
-
 
 
 
@@ -46,7 +50,7 @@ lecturerRouter.post('/get-lecturer-by-department', async (req, res) => {
             return {
                 ...lecturer._doc,
                 availableDays: availability ? availability.availableDays : [],
-                
+
             };
         });
 
@@ -54,6 +58,25 @@ lecturerRouter.post('/get-lecturer-by-department', async (req, res) => {
     } catch (error) {
         res.status(500).send({ message: "Error fetching lecturers", success: false });
     }
+});
+
+lecturerRouter.post('/profile', authMiddleware, async (req, res) => {
+
+
+    try {
+
+        const lecturer = await Lecturer.findById(req.user._id).select('username', 'email');
+
+
+        if (!lecturer) {
+            return res.status(404).send({ message: "User not found", success: false });
+        }
+
+        res.status(200).send({ message: "Profile fetched successfully", success: true, user: { username: lecturer.username, email: lecturer.email } });
+    } catch (error) {
+        res.status(500).send({ message: "Error fetching profile", success: false });
+    }
+
 });
 
 

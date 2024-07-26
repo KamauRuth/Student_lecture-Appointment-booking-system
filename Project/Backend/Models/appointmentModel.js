@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const appointmentSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'useModel',
     
   },
   lecturerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'lecModel',
    // required: true
   },
   username: {
@@ -32,7 +32,11 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     enum: ['Pending', 'Accepted', 'Rejected'],
     default: 'Pending'
-  }
+  },
+  reminderSent: {
+    type: Boolean,
+    default: false
+  },
 });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);
