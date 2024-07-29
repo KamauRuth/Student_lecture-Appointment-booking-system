@@ -7,26 +7,23 @@ const Department = require('../Models/DeptModel.js')
 
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
+const { default: mongoose } = require('mongoose');
 
 
 
 lecturerRouter.post('/update-availability', async (req, res) => {
-    const { lecturerId, availabilities}= req.body;
-    
-    
-    if (!lecturerId) {
-        return res.status(400).send({ message: "Lecturer ID is required", success: false });
-    }
     try {
-        // Ensure lecturerId is in the correct format, if necessary
-        // const formattedLecturerId = mongoose.Types.ObjectId(lecturerId);
+        const { _id, newAvailability } = req.body;
 
-        const lecturer = await Lecturer.findById({lecturerId});
-
+        // Update the lecturer's availability
+        const lecturer = await Lecturer.findByIdAndUpdate(
+            _id,
+            { newAvailability },
+            { new: true, runValidators: true } // `new: true` returns the updated document
+        );
+        
         if (lecturer) {
-            console.log('Lecturer found:', lecturer);
-            lecturer.availabilities = availabilities;
-            await lecturer.save();
+            console.log(lecturer);
             res.status(200).send({ message: "Availability updated successfully", success: true });
         } else {
             res.status(400).send({ message: "Lecturer not found", success: false });
@@ -36,7 +33,6 @@ lecturerRouter.post('/update-availability', async (req, res) => {
         res.status(500).send({ message: "Error updating availability", success: false });
     }
 });
-
 
 
 lecturerRouter.post('/get-lecturer-by-department', async (req, res) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Layout from '../../components/layout';
 import { Select, Button } from 'antd';
@@ -9,23 +9,34 @@ import 'react-day-picker/dist/style.css';
 
 const { Option } = Select;
 
-const UpdateAvailability = ({ lecturerId }) => {
+const UpdateAvailability = () => {
   const initialRange = {
     from: new Date(),
     to: new Date(),
   };
-  
+
   const navigate = useNavigate();
+  const [lecturerId, setLecturerId] = useState(null);
   const [range, setRange] = useState(initialRange);
   const [form, setForm] = useState([]);
-  const [availableTimes, setAvailableTimes] = useState("");
+  const [availableTimes, setAvailableTimes] = useState([]);
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem('user'));
+    if (storedData && storedData.userId) {
+      setLecturerId(storedData.userId);
+      console.log("Retrieved lecturerId from localStorage:", storedData.userId);
+    } else {
+      toast.error('User not found in local storage');
+    }
+  }, []);
 
   const handleSelectChange = (value) => {
     setAvailableTimes(value);
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
 
     const newAvailability = {
       availableDays: [range.from, range.to],
@@ -33,19 +44,19 @@ const UpdateAvailability = ({ lecturerId }) => {
     };
 
     setForm([...form, newAvailability]);
-    console.log('Form:', form);
-    axios.post('/api/lecturer/update-availability', { _id: lecturerId, availabilities: [...form, newAvailability] })
+    console.log('Form before submission:', [...form, newAvailability]);
+
+    axios.post('/api/lecturer/update-availability', { _id: lecturerId, newAvailability: [...form, newAvailability] })
       .then(response => {
         console.log(response.data);
         toast.success('Availability updated successfully!');
-        navigate('/update-availability'); // Redirect to another page if needed
+        navigate('/update-availability');
       })
       .catch(error => {
         toast.error('Error updating availability: ' + error.message);
       });
   };
-  
-  // Generate time intervals for 1-hour slots
+
   const generateTimeIntervals = () => {
     const intervals = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -77,14 +88,15 @@ const UpdateAvailability = ({ lecturerId }) => {
           <div className='timepicker'>
             <label htmlFor='time'>Available Times</label>
             <Select
+              mode="multiple"
               name="time"
               id="time"
               required
               onChange={handleSelectChange}
               className="time"
               style={{ width: '70%' }}
+              placeholder="Select one or more time intervals"
             >
-              <Option value="">Select an interval</Option>
               {timeIntervals.map((interval, i) => (
                 <Option key={i} value={interval}>
                   {interval}
@@ -99,5 +111,4 @@ const UpdateAvailability = ({ lecturerId }) => {
     </Layout>
   );
 };
-
 export default UpdateAvailability;

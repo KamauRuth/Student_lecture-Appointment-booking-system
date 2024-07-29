@@ -42,9 +42,17 @@ const lecSchema = new mongoose.Schema({
         default: []
     },
 
-    availableDays: {
-        type: Array,
-        default: [] 
+    newAvailability: {
+       
+        availableDays: {
+            type: Array,
+            default: []
+        },
+        availableTimes: {
+            type: Array,
+            default: []
+        }
+       
     },
     
     

@@ -133,8 +133,8 @@ userRouter.get('/get-lecturer-by-department', async (req, res) => {
 userRouter.post('/book-appointment', async (req, res) => {
     const { date, time, userInfo, lecturerId } = req.body;
     try {
-        req.body.date = moment(req.body.date, 'YYYY-MM-DD').toISOString();
-        req.body.time = moment(req.body.time, 'HH:mm').toISOString('HH:mm');
+        // req.body.date = moment(req.body.date, 'YYYY-MM-DD').toISOString();
+        // req.body.time = moment(req.body.time, 'HH:mm').toISOString('HH:mm');
         const appointment = await Booking.findOne({ date, time, lecturerId});
         const newBooking = new Booking({
             ...req.body,

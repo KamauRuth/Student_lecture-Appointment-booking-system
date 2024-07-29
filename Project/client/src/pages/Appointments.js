@@ -4,15 +4,11 @@ import { Form, Input, Button, DatePicker, TimePicker, Typography, Select } from 
 import moment from 'moment';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
-
-
-  
 
 function Appointments() {
   const [form] = Form.useForm();
@@ -41,7 +37,7 @@ function Appointments() {
     } catch (error) {
       toast.error('Error fetching departments: ' + error.message);
     }
-  }
+  };
 
   // Fetch lecturers
   const fetchLecturers = async (departmentId) => {
@@ -72,14 +68,13 @@ function Appointments() {
 
   const onFinish = async (values) => {
     try {
-     
-      const {  username, email, reason } = values;
+      const { username, email, reason } = values;
       const response = await axios.post('/api/user/book-appointment', {
         ...values,
         lecturerId: selectedLecturer,
-        userInfo: {username,  email},
-        date: date.format('YYYY-MM-DD'),
-        time: time.format('HH:mm') ,
+        userInfo: { username, email },
+        date: date ? date.format('YYYY-MM-DD') : '',
+        time: time ? time.format('HH:mm') : '',
         reason,
       });
       if (response.data.success) {
@@ -123,7 +118,7 @@ function Appointments() {
           <Form.Item label="Date" name="date" rules={[{ required: true, message: 'Please select a date!' }]}>
             <DatePicker
               style={{ width: '100%' }}
-              disabledDate={(current) => !availableDates.includes(current.format('YYYY-MM-DD'))}
+              disabledDate={(current) => !availableDates?.includes(current.format('YYYY-MM-DD'))}
               onChange={(date) => setDate(date)}
             />
           </Form.Item>
@@ -131,8 +126,12 @@ function Appointments() {
             <TimePicker
               style={{ width: '100%' }}
               disabledTime={() => {
-                const availableHours = availableTimes.map(time => moment(time, 'HH:mm').hour());
-                return [...Array(24).keys()].filter(hour => !availableHours.includes(hour));
+                const availableHours = availableTimes ? availableTimes.map(time => moment(time, 'HH:mm').hour()) : [];
+                return {
+                  disabledHours: () => [...Array(24).keys()].filter(hour => !availableHours.includes(hour)),
+                  disabledMinutes: () => [],
+                  disabledSeconds: () => []
+                };
               }}
               onChange={(time) => setTime(time)}
               defaultOpenValue={moment('00:00', 'HH:mm')}
@@ -149,4 +148,5 @@ function Appointments() {
     </Layout>
   );
 }
+
 export default Appointments;

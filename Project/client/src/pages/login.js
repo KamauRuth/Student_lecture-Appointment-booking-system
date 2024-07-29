@@ -33,7 +33,7 @@ function Login() {
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
         setTimeout(() => {
-          navigate('/');
+          navigate('/'); 
         }, 2000); 
       } else {
         toast.error(response.data.message);
