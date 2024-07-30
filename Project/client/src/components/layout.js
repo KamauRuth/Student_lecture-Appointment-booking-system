@@ -22,6 +22,11 @@ function Layout ({children}) {
             icon:'ri-file-list-line'
         },
         {
+            name: 'My Appointments',
+            path: '/my-appointments',
+            icon:'ri-calendar-todo-line'
+        },
+        {
             name: 'profile',
             path: '/profile',
             icon:'ri-user-fill'

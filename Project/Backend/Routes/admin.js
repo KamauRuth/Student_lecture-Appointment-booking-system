@@ -3,6 +3,7 @@ const adminRouter = express.Router();
 const Lecturer = require("../Models/lecModel")
 const User = require('../Models/userModels')
 const Department = require('../Models/DeptModel')
+const Appointment = require('../Models/appointmentModel')
 const authMiddleware = require("../middlewares/authMiddleware")
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
@@ -43,11 +44,11 @@ adminRouter.post("/register-lecturers", async (req, res) => {
 });
 
 adminRouter.post('/lecturer-login', async (req, res) => {
-    
+
     console.log(req.body);
-   
+
     try {
-        const user = await  Lecturer.findOne({ username: req.body.username });
+        const user = await Lecturer.findOne({ username: req.body.username });
         if (!user) {
             return res.status(200).send({ message: "User not found", success: false });
         }
@@ -56,7 +57,7 @@ adminRouter.post('/lecturer-login', async (req, res) => {
             return res.status(200).send({ message: "Invalid credentials", success: false });
         } else {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isLecturer: user.isLecturer, userId: user._id, email: user.email} });
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isLecturer: user.isLecturer, userId: user._id, email: user.email } });
 
         }
     } catch (error) {
@@ -67,36 +68,47 @@ adminRouter.post('/lecturer-login', async (req, res) => {
 
 adminRouter.post("/notifications", async (req, res) => {
     try {
-        const notifications = await User.findOne({ username: req.body.username });
-        console.log(notifications);
+        const { username, isLecturer } = req.body;
 
-        if (!notifications) {
-            return res.status(400).json({ message: "No Notification" });
+        if (!username) {
+            return res.status(400).json({ message: 'Username is required' });
         }
 
-        res.status(200).json({ message: "New Notification", notifications: notifications });
+        let notifications;
+
+        if (isLecturer) {  // If the user is a lecturer
+            notifications = await Lecturer.findOne({ username });
+        } else {  // If the user is a student
+            notifications = await User.findOne({ username });
+        }
+
+        if (!notifications) {
+            return res.status(404).json({ message: 'No notifications found for this user' });
+        }
+
+        res.status(200).json({ message: 'Notifications retrieved successfully', notifications });
     } catch (error) {
-        console.log("an error occurred getting notifications", error);
-        return res.status(500).json({ message: "Internal Server error" })
+        console.error('An error occurred getting notifications:', error);
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
 adminRouter.post('/add-department', async (req, res) => {
-     const { department } = req.body
+    const { department } = req.body
     try {
         const departmentExists = await Department.findOne({ department: req.body.department });
         console.log(departmentExists);
         if (departmentExists) {
             return res.status(400).send({ message: "Department already exists", success: false });
         }
-        
+
 
 
         const newDepartment = new Department({
             department: department,
-          });
+        });
         await newDepartment.save();
-        
+
 
         res.status(201).json({ message: 'Department added successfully' });
     } catch (error) {
@@ -104,25 +116,138 @@ adminRouter.post('/add-department', async (req, res) => {
     }
 });
 
+// Fetch appointments for the logged-in lecturer
+adminRouter.get('/booked-appointments', async (req, res) => {
+    const { userId } = req.query;
+
+
+    if (!userId) {
+        return res.status(400).json({ message: 'Bad Request: Missing userId' });
+    }
+
+    try {
+        // Fetch the lecturer from the database
+        const lecturer = await Lecturer.findById(userId);
+        if (!lecturer || !lecturer.isLecturer) {
+            return res.status(403).json({ message: 'Forbidden: User is not a lecturer' });
+        }
+
+        // Fetch appointments for this lecturer
+        const appointments = await Appointment.find({ lecturerId: userId }).populate('lecturerId');
+
+        res.json({ appointments });
+    } catch (error) {
+        console.error("Error fetching appointments:", error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 
 
+
+// Accept Appointment and Notify User
 adminRouter.post('/appointments/:id/accept', async (req, res) => {
-    await Appointment.findByIdAndUpdate(req.params.id, { status: 'Accepted' });
-    res.json({ message: 'Appointment accepted' });
+    try {
+        const appointment = await Appointment.findByIdAndUpdate(req.params.id, { status: 'Accepted' });
+        if (appointment) {
+            // Find the user associated with this appointment
+            const user = await User.findById(appointment.userId);
+
+            const lecturer = await Lecturer.findById(appointment.lecturerId);
+            if (user) {
+                // Add notification to the user
+                user.unseenNotifications.push({
+                    type: 'Appointment Accepted',
+                    message: `Your appointment with ${lecturer.username} has been accepted.`,
+                    data: {
+                        appointmentId: appointment._id,
+                        date: appointment.date,
+                        time: appointment.time,
+                        name: lecturer.username,
+                        email: lecturer.email,
+                    },
+                    onclick: '/user/appointments' // Redirect user to their appointments page
+                });
+
+                await user.save();
+            }
+
+            res.json({ message: 'Appointment accepted and user notified.' });
+        } else {
+            res.status(404).json({ message: 'Appointment not found.' });
+        }
+    } catch (error) {
+        console.error('Error accepting appointment:', error);
+        res.status(500).json({ message: 'Server error.' });
+    }
 });
 
-
+// Reject Appointment and Notify User
 adminRouter.post('/appointments/:id/reject', async (req, res) => {
-    await Appointment.findByIdAndUpdate(req.params.id, { status: 'Rejected' });
-    res.json({ message: 'Appointment rejected' });
+    try {
+        const appointment = await Appointment.findByIdAndUpdate(req.params.id, { status: 'Rejected' });
+        if (appointment) {
+            // Find the user associated with this appointment
+            const user = await User.findById(appointment.userId);
+            if (user) {
+                // Add notification to the user
+                user.unseenNotifications.push({
+                    type: 'Appointment Rejected',
+                    message: `Your appointment with ${appointment.lecturerId} has been rejected.`,
+                    data: {
+                        appointmentId: appointment._id,
+                        date: appointment.date,
+                        time: appointment.time,
+                    },
+                    onclick: '/user/appointments' // Redirect user to their appointments page
+                });
+
+                await user.save();
+            }
+
+            res.json({ message: 'Appointment rejected and user notified.' });
+        } else {
+            res.status(404).json({ message: 'Appointment not found.' });
+        }
+    } catch (error) {
+        console.error('Error rejecting appointment:', error);
+        res.status(500).json({ message: 'Server error.' });
+    }
 });
+
 
 
 adminRouter.put('/lecturers/:id/available-times', async (req, res) => {
     const { availableTimes } = req.body;
     await Lecturer.findByIdAndUpdate(req.params.id, { availableTimes });
     res.json({ message: 'Available times updated' });
+});
+
+
+adminRouter.post('/mark-all-as-seen', async (req, res) => {
+    const { username } = req.body;
+
+    if (!username) {
+        return res.status(400).json({ message: 'Username is required' });
+    }
+
+    try {
+        const user = await Lecturer.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.seenNotifications = user.seenNotifications.concat(user.unseenNotifications);
+        user.unseenNotifications = []; // Clear unseen notifications
+
+        await user.save();
+
+        res.status(200).json({ message: 'All notifications marked as seen' });
+    } catch (error) {
+        console.error('Error marking notifications as seen:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
 });
 
 module.exports = adminRouter;

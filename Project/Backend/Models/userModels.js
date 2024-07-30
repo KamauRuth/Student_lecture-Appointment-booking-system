@@ -48,7 +48,11 @@ const userShema = new mongoose.Schema({
     time: {
         type: Array,
         default: []
-    }
+    },
+    BookedAppointments: {
+        type: Array,
+        default: []
+    },  
 
 }, {
     timestamps: true

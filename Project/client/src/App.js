@@ -10,6 +10,7 @@ import Notifications from './pages/Notifications';
 // import Userlist from './pages/Admin/UpdateAvailability.js';
 // import Lecturerlist from './pages/Admin/BookedAppointments.js';
 import AppointmentBooking from './pages/Appointments';
+import MyAppointment from './pages/myAppointments';
 import Profile from './pages/Profile';
 import BookedAppointments from './pages/Lecturer/BookedAppointments.js';
 import UpdateAvailability from './pages/Lecturer/UpdateAvailability.js';
@@ -67,12 +68,19 @@ function App() {
             </protectedRoute>
           } />
 
+        <Route
+          path="/my-appointments" element={
+            <protectedRoute>
+              <MyAppointment />
+            </protectedRoute>
+          } />
+
 
 
         <Route
           path="/update-availability" element={
             <protectedRoute>
-              <UpdateAvailability/>
+              <UpdateAvailability />
             </protectedRoute>
           } />
 
@@ -90,7 +98,7 @@ function App() {
             </protectedRoute>
           } />
 
-          
+
         <Route
           path="/register-lecturers" element={
             <protectedRoute>
@@ -105,12 +113,12 @@ function App() {
             </protectedRoute>
           } />
 
-          <Route
+        <Route
           path="/add-department" element={
             <protectedRoute>
               <AddDepartment />
             </protectedRoute>
-          } />  
+          } />
 
 
       </Routes>

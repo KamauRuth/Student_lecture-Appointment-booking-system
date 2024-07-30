@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
+
 const lecSchema = new mongoose.Schema({
-//    lecturerId: {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: 'lecModel',
-//     },
     firstname: {
         type: String,
         required: [true, 'Please tell us your name!']
@@ -32,7 +29,6 @@ const lecSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please provide a password!']
     },
-    
     seenNotifications: {
         type: Array,
         default: []
@@ -41,22 +37,16 @@ const lecSchema = new mongoose.Schema({
         type: Array,
         default: []
     },
-
-    newAvailability: {
-       
+    newAvailability: [{
         availableDays: {
-            type: Array,
+            type: [Date], // Array of dates
             default: []
         },
         availableTimes: {
-            type: Array,
+            type: [String], // Array of strings
             default: []
         }
-       
-    },
-    
-    
- 
+    }]
 }, {
     timestamps: true
 });

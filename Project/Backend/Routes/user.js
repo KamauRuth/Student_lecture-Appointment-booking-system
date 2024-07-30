@@ -13,7 +13,6 @@ userRouter.post('/register', async (req, res) => {
 
     try {
         const userExists = await User.findOne({ email: req.body.email });
-        console.log(userExists);
         if (userExists) {
             return res.status(400).send({ message: "User already exists", success: false });
         }
@@ -26,7 +25,7 @@ userRouter.post('/register', async (req, res) => {
         await newUser.save();
         res.status(200).send({ message: "User created successfully", success: true });
     } catch (error) {
-        console.log(error);
+        console.warn(error);
         res.status(500).send({ message: "Error creating user", success: false });
     }
 });
@@ -44,11 +43,11 @@ userRouter.post('/login', async (req, res) => {
             return res.status(200).send({ message: "Invalid credentials", success: false });
         } else {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            res.status(200).send({ message: "Login successful", success: true, data: token, user: { username: user.username, isAdmin: user.isAdmin, email: user.email } });
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: {userId: user._id, username: user.username, isAdmin: user.isAdmin, email: user.email } });
 
         }
     } catch (error) {
-        console.log("error is: ", error);
+        console.warn("error is: ", error);
         res.status(500).send({ message: "Error logging in", success: false });
     }
 });
@@ -71,13 +70,11 @@ userRouter.post("/get-user-info-by-id", async (req, res) => {
         });
 
 
-        console.log("Request received with userId:", userId);
         // Declare and initialize user before using it
         const user = await getUserInfoById(userId);
-        console.log("User information retrieved:", user);
         res.status(200).json({ user });
     } catch (error) {
-        console.log("Error is:", error.message);
+        console.warn("Error is:", error.message);
         res.status(500).json({ message: "Server Error" });
     }
 });
@@ -87,7 +84,7 @@ const getUserInfoById = async (userId) => {
         const user = await User.findById(userId);
         return user;
     } catch (error) {
-        console.log("Error is:", error.message);
+        console.warn("Error is:", error.message);
         return null;
     }
 
@@ -99,7 +96,6 @@ userRouter.get('/get-all-department', async (req, res) => {
     try {
 
         const department = await Department.find();
-        console.log(department);
         res.json(department);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching department', error: error.message });
@@ -111,7 +107,6 @@ userRouter.get('/get-all-lecturers', async (req, res) => {
     try {
 
         const lecturers = await lecturer.find();
-        console.log(lecturers);
         res.json(lecturers);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching lecturers', error: error.message });
@@ -119,10 +114,10 @@ userRouter.get('/get-all-lecturers', async (req, res) => {
 });
 
 userRouter.get('/get-lecturer-by-department', async (req, res) => {
-    const departmentId = req.body.department;
+    const department = req.query.department; // Use req.query to get the query parameter
 
     try {
-        const lecturers = await lecturer.find({ departmentId });
+        const lecturers = await lecturer.find({ department });
         res.json(lecturers);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching lecturers', error: error.message });
@@ -130,19 +125,28 @@ userRouter.get('/get-lecturer-by-department', async (req, res) => {
 });
 
 
+
 userRouter.post('/book-appointment', async (req, res) => {
-    const { date, time, userInfo, lecturerId } = req.body;
+    const { date, time, name, email, userId, lecturerId } = req.body;
     try {
         // req.body.date = moment(req.body.date, 'YYYY-MM-DD').toISOString();
         // req.body.time = moment(req.body.time, 'HH:mm').toISOString('HH:mm');
-        const appointment = await Booking.findOne({ date, time, lecturerId});
+
+        // Check if an appointment already exists for the given date, time, and lecturer
+        const existingAppointment = await Booking.findOne({ date, time, userId, lecturerId });
+        if (existingAppointment) {
+            return res.status(400).json({ message: 'This time slot is already booked.' });
+        }
+
+        const appointment = await Booking.findOne({ date, time, userId, lecturerId});
         const newBooking = new Booking({
             ...req.body,
-            userId: User._id,
+            userId,
             lecturerId,
             date,
             time,
-            userInfo
+            name,
+            email
         });
 
 
@@ -152,23 +156,25 @@ userRouter.post('/book-appointment', async (req, res) => {
 
         //send notification to lecturer
 
-        const lecturerUser = await lecturer.findOne({ isLecturer: true });
-        console.log(lecturerUser);
+        const lecturerUser = await lecturer.findById(lecturerId);
         const unseenNotifications = lecturerUser.unseenNotifications;
 
         unseenNotifications.push({
             type: "New Booking",
             message: "New Appointment Booking",
             data: {
-                username: User.username,
-                email: User.email,
+                name: req.body.name,
+                email: req.body.email,
                 reason: req.body.reason,
+                date: req.body.date,
+                time: req.body.time
             },
-            onclick: '/lecturer/booked-appointments'
+            onclick: '/booked-appointments'
         });
-        await User.findByIdAndUpdate(lecturerUser._id, { unseenNotifications });
+        console.log(lecturerUser._id);
+        await lecturer.findByIdAndUpdate(lecturerUser._id, { unseenNotifications });
     } catch (error) {
-        console.log("Error is:", error.message);
+        console.warn("Error is:", error.message);
 
     }
 });
@@ -197,6 +203,28 @@ userRouter.post('/profile', authMiddleware, async (req, res) => {
     }
 
 });
+
+userRouter.get('/appointments', async (req, res) => {
+    try {
+      const userId = req.query.userId;
+  
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+  
+      // Find all appointments for the user
+      const appointments = await Booking.find({ userId }).populate('lecturerId'); // Use .populate() if you need to populate related data
+  
+      if (!appointments) {
+        return res.status(404).json({ message: 'No appointments found' });
+      }
+  
+      res.status(200).json({ appointments });
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
 
 
 

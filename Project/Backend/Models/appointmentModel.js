@@ -1,18 +1,23 @@
 const mongoose = require('mongoose');
 
 const appointmentSchema = new mongoose.Schema({
-
-  
-  userInfo: {
-    username: {
-      type: String,
-      required: true
-    },
-    email: {
-      type: String,
-      required: true
-    },
+  lecturerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
+  name: {
+      type: String,
+      required: true
+  },
+  email: {
+      type: String,
+      required: true
+  },
+  
   date: {
     type: Date,
     required: true
