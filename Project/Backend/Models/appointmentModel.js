@@ -31,9 +31,13 @@ const appointmentSchema = new mongoose.Schema({
     enum: ['Pending', 'Accepted', 'Rejected'],
     default: 'Pending'
   },
+  reason: {
+    type: String,
+    required: true
+  },
   reminderSent: {
     type: Boolean,
-    default: false
+    default: true
   },
 });
 

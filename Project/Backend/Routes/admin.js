@@ -182,6 +182,26 @@ adminRouter.post('/appointments/:id/accept', async (req, res) => {
     }
 });
 
+adminRouter.get('/report/csv', async (req, res) => {
+    try {
+      const pipeline = [
+        { $group: { _id: "$reason", count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
+      ];
+  
+      const results = await Appointment.aggregate(pipeline);
+  
+      const json2csvParser = new Parser();
+      const csv = json2csvParser.parse(results);
+  
+      res.header('Content-Type', 'text/csv');
+      res.attachment('report.csv');
+      res.send(csv);
+    } catch (error) {
+      res.status(500).send('Error generating CSV report');
+    }
+  });
+
 // Reject Appointment and Notify User
 adminRouter.post('/appointments/:id/reject', async (req, res) => {
     try {

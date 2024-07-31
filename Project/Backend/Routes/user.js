@@ -8,6 +8,7 @@ const Booking = require('../Models/appointmentModel.js')
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
 const moment = require('moment');
+const transporter = require('../mailer');
 
 userRouter.post('/register', async (req, res) => {
 
@@ -43,7 +44,7 @@ userRouter.post('/login', async (req, res) => {
             return res.status(200).send({ message: "Invalid credentials", success: false });
         } else {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            res.status(200).send({ message: "Login successful", success: true, data: token, user: {userId: user._id, username: user.username, isAdmin: user.isAdmin, email: user.email } });
+            res.status(200).send({ message: "Login successful", success: true, data: token, user: { userId: user._id, username: user.username, isAdmin: user.isAdmin, email: user.email } });
 
         }
     } catch (error) {
@@ -127,18 +128,23 @@ userRouter.get('/get-lecturer-by-department', async (req, res) => {
 
 
 userRouter.post('/book-appointment', async (req, res) => {
-    const { date, time, name, email, userId, lecturerId } = req.body;
+    const { date, time, name, email, userId, lecturerId, reason } = req.body;
     try {
         // req.body.date = moment(req.body.date, 'YYYY-MM-DD').toISOString();
         // req.body.time = moment(req.body.time, 'HH:mm').toISOString('HH:mm');
 
         // Check if an appointment already exists for the given date, time, and lecturer
-        const existingAppointment = await Booking.findOne({ date, time, userId, lecturerId });
+        const existingAppointment = await Booking.findOne({ date, time, userId, lecturerId,reason });
         if (existingAppointment) {
             return res.status(400).json({ message: 'This time slot is already booked.' });
         }
 
-        const appointment = await Booking.findOne({ date, time, userId, lecturerId});
+
+        // // Fetch user and lecturer details
+        // const user = await User.findById(userId);
+        // const lecturer = await lecturer.findById(lecturerId);
+
+        const appointment = await Booking.findOne({ date, time, userId, lecturerId, reason });
         const newBooking = new Booking({
             ...req.body,
             userId,
@@ -146,11 +152,13 @@ userRouter.post('/book-appointment', async (req, res) => {
             date,
             time,
             name,
-            email
+            email,
+            reason
         });
 
 
         await newBooking.save();
+
 
 
 
@@ -171,12 +179,37 @@ userRouter.post('/book-appointment', async (req, res) => {
             },
             onclick: '/booked-appointments'
         });
+
+        // Send email to student and lecturer
+        const mailOptions = {
+            from: 'your-email@gmail.com',
+            to: `${User.email}, ${lecturer.email}`,
+            subject: 'New Appointment Booking',
+            text: `You have a new appointment scheduled. Details:
+               - Date: ${date}
+              - Time: ${time}
+              - With: ${lecturer.firstname} ${lecturer.lastname}
+              - Reason: ${reason || 'No reason provided'}`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log('Email sent:', info.response);
+            }
+        });
+
+        res.status(200).json({ message: 'Appointment created and notification sent.' });
+
+
         console.log(lecturerUser._id);
         await lecturer.findByIdAndUpdate(lecturerUser._id, { unseenNotifications });
     } catch (error) {
         console.warn("Error is:", error.message);
 
     }
+
 });
 
 
@@ -206,25 +239,25 @@ userRouter.post('/profile', authMiddleware, async (req, res) => {
 
 userRouter.get('/appointments', async (req, res) => {
     try {
-      const userId = req.query.userId;
-  
-      if (!userId) {
-        return res.status(400).json({ message: 'User ID is required' });
-      }
-  
-      // Find all appointments for the user
-      const appointments = await Booking.find({ userId }).populate('lecturerId'); // Use .populate() if you need to populate related data
-  
-      if (!appointments) {
-        return res.status(404).json({ message: 'No appointments found' });
-      }
-  
-      res.status(200).json({ appointments });
+        const userId = req.query.userId;
+
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+
+        // Find all appointments for the user
+        const appointments = await Booking.find({ userId }).populate('lecturerId'); // Use .populate() if you need to populate related data
+
+        if (!appointments) {
+            return res.status(404).json({ message: 'No appointments found' });
+        }
+
+        res.status(200).json({ appointments });
     } catch (error) {
-      console.error('Error fetching appointments:', error);
-      res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Error fetching appointments:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-  });
+});
 
 
 

@@ -9,15 +9,43 @@ import 'react-day-picker/dist/style.css';
 
 const { Option } = Select;
 
+// const UpdateAvailability = () => {
+//   const initialRange = {
+//     from: new Date(),
+//     to: new Date(),
+//   };
+
 const UpdateAvailability = () => {
-  const initialRange = {
+  const [dateRange, setDateRange] = useState({
     from: new Date(),
     to: new Date(),
+  });
+
+  const handleDateChange = (field, date) => {
+    setDateRange({
+      ...dateRange,
+      [field]: date,
+    });
   };
 
-  const navigate = useNavigate();
+  const generateDateArray = (from, to) => {
+    const dates = [];
+    let currentDate = new Date(from);
+
+    while (currentDate <= new Date(to)) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dates;
+  };
+  // Remove the duplicate declaration of handleSubmit
+    const { from, to } = dateRange;
+    const datesArray = generateDateArray(from, to);
+    console.log(datesArray); // This will log the array of dates
+    const navigate = useNavigate();
   const [lecturerId, setLecturerId] = useState(null);
-  const [range, setRange] = useState(initialRange);
+  const [range, setRange] = useState();
   const [form, setForm] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
 
@@ -112,3 +140,5 @@ const UpdateAvailability = () => {
   );
 };
 export default UpdateAvailability;
+
+ 

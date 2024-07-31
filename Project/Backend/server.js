@@ -23,8 +23,21 @@ app.use(cors(cors_options));
 app.use('/api/user', userRouter);
 app.use('/api/admin', adminRouter)
 app.use('/api/lecturer', lecturerRouter);
-const port = process.env.PORT || 5000
-;
+const port = process.env.PORT || 5000;
+// Endpoint to get appointment report
+app.get('/report', async (req, res) => {
+  try {
+    const pipeline = [
+      { $group: { _id: "$reason", count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ];
+
+    const results = await Appointment.aggregate(pipeline);
+    res.json(results);
+  } catch (error) {
+    res.status(500).send('Error generating report');
+  }
+});
 
 
 app.listen(port, () =>  console.log(`Server is listening port ${port}`));

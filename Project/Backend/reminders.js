@@ -1,8 +1,8 @@
 // reminderScheduler.js
 const cron = require('node-cron');
 const moment = require('moment');
-const Appointment = require('./models/Appointment'); // Update with the correct path to your Appointment model
-const sendEmail = require('./sendEmail'); // Update with the correct path to your sendEmail function
+const Appointment = require('./Models/appointmentModel'); // Update with the correct path to your Appointment model
+const sendEmail = require('./mailer'); // Update with the correct path to your sendEmail function
 
 // Function to check for upcoming appointments and send reminders
 const checkAppointments = async () => {

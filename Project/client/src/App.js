@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/login';
 import Register from './pages/register';
-import ForgotPassword from './pages/forgotpassword';
 import Home from './pages/Home';
 import { Toaster } from 'react-hot-toast';
 import ApplyLecturer from './pages/RegisterLecturer.js';
@@ -17,6 +16,8 @@ import UpdateAvailability from './pages/Lecturer/UpdateAvailability.js';
 import RegisterLecturer from './pages/RegisterLecturer.js';
 import LecturerLogin from './pages/lecturerLogin.js';
 import AddDepartment from './pages/addDepartment.js';
+import Landing from './pages/landing.js';
+import Reports from './pages/report.js';
 
 
 function App() {
@@ -39,20 +40,20 @@ function App() {
           </publicRoute>
         } />
 
+        <Route
+           path='/home' element={ 
+            <publicRoute>
+              <Home />
+            </publicRoute>
+          } />
+
+
         <Route path="/apply-lecturer" element={
           <publicRoute>
             <ApplyLecturer />
           </publicRoute>
         } />
 
-
-
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/" element={
-          <protectedRoute>
-            <Home />
-          </protectedRoute>
-        } />
 
         <Route
           path="/notifications" element={
@@ -74,6 +75,14 @@ function App() {
               <MyAppointment />
             </protectedRoute>
           } />
+
+          <Route
+          path='/' element={
+            <publicRoute>
+              <Landing />
+            </publicRoute>
+          } />
+
 
 
 
@@ -118,6 +127,13 @@ function App() {
             <protectedRoute>
               <AddDepartment />
             </protectedRoute>
+          } />
+
+          <Route
+          path='/reports' element={ 
+            <publicRoute>
+              <Reports />
+            </publicRoute>
           } />
 
 

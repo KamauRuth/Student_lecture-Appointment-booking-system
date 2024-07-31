@@ -13,7 +13,7 @@ function Layout ({children}) {
     const userMenu = [
         {
             name: 'Home',
-            path: '/',
+            path: '/home',
             icon:'ri-home-line'
         },
         {

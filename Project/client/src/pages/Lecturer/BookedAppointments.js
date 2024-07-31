@@ -51,7 +51,9 @@ const BookedAppointments = () => {
             <strong>Student Name:</strong> {appointment.name} <br />
             <strong>Lecturer Name:</strong> {JSON.parse(localStorage.getItem('user')).username} <br />
             <strong>Time Slot:</strong> {appointment.time} <br />
+            <strong>Reason:</strong> {appointment.reason}<br />
             <strong>Status:</strong> {appointment.status}
+            
           </p>
           {status === 'Pending' && (
             <div>

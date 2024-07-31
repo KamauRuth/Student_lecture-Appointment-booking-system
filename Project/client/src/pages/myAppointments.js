@@ -35,8 +35,16 @@ const MyAppointments = () => {
           <List.Item>
             <List.Item.Meta
               title={`Appointment with ${appointment.lecturerName}`}
-              description={`Date: ${appointment.date}, Time: ${appointment.time}, Reason: ${appointment.reason}`}
+              description={
+                <div>
+                  <p>Date: {appointment.date}</p>
+                  <p>Time: {appointment.time}</p>
+                  <p>Reason: {appointment.reason}</p>
+                  <p>Status: {appointment.status}</p>
+                </div>
+                }
             />
+                
           </List.Item>
         )}
       />
