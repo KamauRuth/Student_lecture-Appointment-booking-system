@@ -7,6 +7,7 @@ const Appointment = require('../Models/appointmentModel')
 const authMiddleware = require("../middlewares/authMiddleware")
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
+const { Parser } = require('json2csv');
 
 
 adminRouter.get("/get-all-lecturers", (req, res, next) => authMiddleware(req, res, next), async (req, res) => {
@@ -185,23 +186,51 @@ adminRouter.post('/appointments/:id/accept', async (req, res) => {
 
 adminRouter.get('/report/csv', async (req, res) => {
     try {
-      const pipeline = [
-        { $group: { _id: "$reason", count: { $sum: 1 } } },
-        { $sort: { count: -1 } }
-      ];
-  
-      const results = await Appointment.aggregate(pipeline);
-  
-      const json2csvParser = new Parser();
-      const csv = json2csvParser.parse(results);
-  
-      res.header('Content-Type', 'text/csv');
-      res.attachment('report.csv');
-      res.send(csv);
+        console.log("Starting aggregation...");
+        // Aggregation pipeline to fetch the required fields
+        const pipeline = [
+            {
+                $project: {
+                    _id: 0, // Exclude the default _id field
+                    username: 1,
+                    email: 1,
+                    department: 1,
+                    reason: 1,
+                }
+            }
+        ];
+
+        // Execute the aggregation
+        const results = await Appointment.aggregate(pipeline);
+        console.log("Aggregation results:", results);
+
+        // Check if results are as expected
+        if (!results || results.length === 0) {
+            console.log("No results found");
+        } else {
+            console.log("Results found");
+        }
+
+        console.log("Initializing json2csv Parser...");
+        // Define the fields for the CSV file
+        const fields = ['email', 'username', 'department', 'reason'];
+        const json2csvParser = new Parser({ fields });
+        console.log("json2csv Parser initialized:", json2csvParser);
+
+        console.log("Parsing results to CSV...");
+        const csv = json2csvParser.parse(results);
+        console.log("CSV generated:", csv);
+
+        // Set headers and send the CSV file
+        res.header('Content-Type', 'text/csv');
+        res.attachment('report.csv');
+        res.send(csv);
     } catch (error) {
-      res.status(500).send('Error generating CSV report');
+        console.error('Error generating CSV:', error);
+        res.status(500).send('Error generating CSV report');
     }
-  });
+});
+
 
 // Reject Appointment and Notify User
 adminRouter.post('/appointments/:id/reject', async (req, res) => {
