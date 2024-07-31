@@ -186,7 +186,6 @@ adminRouter.post('/appointments/:id/accept', async (req, res) => {
 
 adminRouter.get('/report/csv', async (req, res) => {
     try {
-        console.log("Starting aggregation...");
         // Aggregation pipeline to fetch the required fields
         const pipeline = [
             {
@@ -202,7 +201,6 @@ adminRouter.get('/report/csv', async (req, res) => {
 
         // Execute the aggregation
         const results = await Appointment.aggregate(pipeline);
-        console.log("Aggregation results:", results);
 
         // Check if results are as expected
         if (!results || results.length === 0) {
@@ -211,22 +209,17 @@ adminRouter.get('/report/csv', async (req, res) => {
             console.log("Results found");
         }
 
-        console.log("Initializing json2csv Parser...");
         // Define the fields for the CSV file
         const fields = ['email', 'username', 'department', 'reason'];
         const json2csvParser = new Parser({ fields });
-        console.log("json2csv Parser initialized:", json2csvParser);
 
-        console.log("Parsing results to CSV...");
         const csv = json2csvParser.parse(results);
-        console.log("CSV generated:", csv);
 
         // Set headers and send the CSV file
         res.header('Content-Type', 'text/csv');
         res.attachment('report.csv');
         res.send(csv);
     } catch (error) {
-        console.error('Error generating CSV:', error);
         res.status(500).send('Error generating CSV report');
     }
 });
@@ -287,7 +280,8 @@ adminRouter.post('/mark-all-as-seen', async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
-        }
+        }        console.log("Starting aggregation...");
+
 
         user.seenNotifications = user.seenNotifications.concat(user.unseenNotifications);
         user.unseenNotifications = []; // Clear unseen notifications

@@ -4,7 +4,7 @@ import Layout from '../components/layout';
 
 function Landing() {
     return (
-        <Layout>
+        // <Layout>
             <div>
                 <Navbar bg="dark" variant="dark" expand="lg">
                     <Container>
@@ -102,7 +102,7 @@ function Landing() {
                     </Container>
                 </footer>
             </div>
-        </Layout>
+        // </Layout>
     );
 }
 
