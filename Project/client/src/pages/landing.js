@@ -7,6 +7,7 @@ function Landing() {
        
             <div className="nav-bar">
                 <Navbar  bg="dark" variant="dark" expand="lg">
+
                     <Container>
                         <Navbar.Brand href="/">Appointment Booking</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -102,7 +103,6 @@ function Landing() {
                     </Container>
                 </footer>
             </div>
-      
     );
 }
 
