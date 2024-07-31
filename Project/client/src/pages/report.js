@@ -1,5 +1,6 @@
-import { Layout } from 'antd';
+import Layout from '../components/layout';
 import React, { useEffect, useState } from 'react';
+
 
 function Report() {
   const [data, setData] = useState([]);
@@ -11,10 +12,15 @@ function Report() {
       .catch(error => console.error('Error fetching report:', error));
   }, []);
 
+  function downloadCSV() {
+    window.location.href = '/report/csv';
+  }
+
   return (
     <Layout>
     <div>
       <h1>Appointment Report</h1>
+      <button onClick={downloadCSV}>Download CSV</button>
       <table>
         <thead>
           <tr>
@@ -35,5 +41,4 @@ function Report() {
     </Layout>
   );
 }
-
 export default Report;

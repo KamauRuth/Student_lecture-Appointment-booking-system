@@ -78,6 +78,10 @@ function Login() {
             <p>Do not have an account? <a href="/register">Register</a></p>
           </div>
 
+          <div className="lecturer-login">
+            <p>Login as Lecturer <a href="/lecturer-login">Login</a></p>
+          </div>
+
         </form>
       </div>
     </div>

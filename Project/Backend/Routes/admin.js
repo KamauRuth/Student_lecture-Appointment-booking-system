@@ -163,6 +163,7 @@ adminRouter.post('/appointments/:id/accept', async (req, res) => {
                         appointmentId: appointment._id,
                         date: appointment.date,
                         time: appointment.time,
+                        department: appointment.department,
                         name: lecturer.username,
                         email: lecturer.email,
                     },
@@ -218,6 +219,7 @@ adminRouter.post('/appointments/:id/reject', async (req, res) => {
                         appointmentId: appointment._id,
                         date: appointment.date,
                         time: appointment.time,
+                        department: appointment.department,
                     },
                     onclick: '/user/appointments' // Redirect user to their appointments page
                 });

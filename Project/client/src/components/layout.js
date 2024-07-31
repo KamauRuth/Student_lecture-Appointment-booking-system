@@ -68,6 +68,11 @@ function Layout ({children}) {
             icon:'ri-user-add-line'
         },
         {
+            name: 'reports',
+            path: '/reports',
+            icon:'ri-file-list-line'
+        },
+        {
             name: 'profile',
             path: '/profile',
             icon:'ri-user-fill'

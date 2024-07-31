@@ -52,6 +52,7 @@ const BookedAppointments = () => {
             <strong>Lecturer Name:</strong> {JSON.parse(localStorage.getItem('user')).username} <br />
             <strong>Time Slot:</strong> {appointment.time} <br />
             <strong>Reason:</strong> {appointment.reason}<br />
+            <strong>Department:</strong>{appointment.department}<br />
             <strong>Status:</strong> {appointment.status}
             
           </p>
